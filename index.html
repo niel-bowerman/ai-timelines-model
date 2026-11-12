@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>AI Timelines Model</title>
-<meta name="description" content="An interactive model of how AI progress could unfold: three regimes, four milestones, adjustable assumptions.">
+<meta name="description" content="An interactive model of how AI progress could unfold after the METR report: three regimes, four milestones, adjustable assumptions.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
@@ -20,9 +20,8 @@
   --body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-[hidden]{display:none!important}
 .wrap{max-width:1120px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:36px}
 h1{font-family:var(--display);font-size:30px;line-height:1.15;margin:0;font-weight:700;text-wrap:balance}
 h2{font-family:var(--display);font-size:20px;line-height:1.25;margin:0;font-weight:600;text-wrap:balance}
@@ -41,6 +40,17 @@ p{margin:0;max-width:66ch}
 .res .big{font-family:var(--display);font-size:21px;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums;white-space:nowrap}
 .res .sm{font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .toprow{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between}
+.btns{display:flex;gap:8px 12px;flex-wrap:wrap;align-items:center}
+.vid{font-size:13.5px;font-weight:600}
+.pre{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600}
+.pre select{font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:7px 8px;max-width:100%}
+.pre select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}button.primary:hover{background:var(--ink2)}
+#forecast{scroll-margin-top:90px}
+.regs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.reg{background:var(--panel);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.rh{font-family:var(--display);font-weight:600;font-size:15.5px;display:flex;align-items:center;gap:8px}
+.ctl .split{grid-column:1/-1;height:14px;margin-top:5px}
 .bar .lab{font-size:12.5px;color:var(--ink2);max-width:13ch;line-height:1.3}
 button{font:inherit;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:8px;padding:7px 12px;cursor:pointer}
 button:hover{background:var(--panel)}
@@ -68,28 +78,37 @@ svg{display:block;width:100%;height:auto}
 .splitkey{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)}
 .tip{position:absolute;top:4px;pointer-events:none;background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:7px 10px;font-size:12.5px;line-height:1.45;font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .tip b{font-weight:600} .tip span{display:flex;align-items:center;gap:6px}
+.pub{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:12.5px;color:var(--ink2);margin-top:10px;align-items:center}
+.pub span{display:inline-flex;align-items:center;gap:6px}.pub svg{width:14px;height:14px;flex:none}
+.chk{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink);cursor:pointer}.chk input{accent-color:var(--ink);margin:0}
+.pts{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--ink2)}.pts b{color:var(--ink)}
+.bridge{font-family:var(--display);font-size:17px;font-weight:500;color:var(--ink);max-width:60ch}
+a{color:var(--ink);text-underline-offset:2px}
+.seg{display:flex;gap:2px;background:var(--line);border-radius:8px;padding:2px}.seg label{flex:1;display:flex;cursor:pointer}.seg input{position:absolute;opacity:0;pointer-events:none}.seg span{flex:1;text-align:center;font-size:13px;font-weight:600;padding:6px 8px;border-radius:6px;color:var(--ink2)}.seg input:checked+span{background:var(--bg);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}.seg input:focus-visible+span{outline:2px solid var(--ink);outline-offset:1px}
 .note{border-top:1px solid var(--rule);padding-top:16px;font-size:13.5px;color:var(--ink2);display:flex;flex-direction:column;gap:8px}
-.note a{color:var(--ink)}
+@media (max-width:860px){.regs{grid-template-columns:minmax(0,1fr)}.pair{grid-template-columns:minmax(0,1fr)}.bar .lab{display:none}.res .big{font-size:17px}.bar{gap:6px 18px}.res .sm{display:none}}
 
-/* milestone definitions: a small (i) button with a floating definition */
+/* public-page additions: base reset, milestone definition pop-ups */
+body{margin:0}
+[hidden]{display:none!important}
 .info,.info-inline{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;padding:0;margin:0 0 0 1px;border-radius:50%;border:1px solid var(--mute);background:transparent;color:var(--ink2);font:600 10.5px/1 var(--body);vertical-align:1px;cursor:help}
 .info:hover,.info:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .info:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .info-inline{cursor:default}
 #infobox{position:absolute;z-index:20;max-width:min(300px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:13px;line-height:1.45;font-weight:400;padding:9px 11px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none}
-
-@media (max-width:860px){.pair{grid-template-columns:minmax(0,1fr)}.bar .lab{display:none}.res .big{font-size:17px}.bar{gap:6px 18px}.res .sm{display:none}}
 </style>
 </head>
 <body>
+
 <div class="wrap">
   <div class="head">
-    <div class="toprow"><h1>AI Timelines Model</h1><button id="reset" type="button">Reset to default settings</button></div>
-    <p class="lede">Niel Bowerman and Claude's model of how AI progress could unfold after the METR report. Move any slider and the forecast updates.</p>
+    <div class="toprow"><h1>AI Timelines Model</h1><div class="btns"><label class="pre" for="preset">Assumptions<select id="preset"><option value="default">Niel and Claude (default)</option><option value="aifp">AI Futures Project, roughly</option><option value="paul">Paul Christiano, roughly</option><option value="sentinel">Sentinel, roughly</option><option value="custom">Custom</option></select></label><button id="skip" type="button" class="primary">Skip to forecast</button><button id="reset" type="button">Reset to default settings</button></div></div>
+    <p class="lede">Niel Bowerman and Claude's model of how AI progress could unfold after the METR report. It starts from what has been measured, sets out three ways progress could go from here, and turns them into a forecast. Move any slider and everything downstream updates.</p>
+    <p class="sub">The Assumptions menu loads settings that roughly reproduce other published forecasts. They are our attempts inside this model, not the forecasters' own models.</p>
   </div>
 
   <div class="bar" id="bar">
-    <div class="lab">Date each milestone is as likely as not</div>
+    <div class="lab">The forecast: date each milestone is as likely as not</div>
     <div class="res"><div class="nm"><i class="dot" style="background:var(--sar)"></i>SAR <button type="button" class="info" data-t="SAR" aria-label="What is SAR?">i</button></div><div class="big" id="r_SAR_50"></div><div class="sm" id="r_SAR_s"></div></div>
     <div class="res"><div class="nm"><i class="dot" style="background:var(--ted)"></i>TED-AI <button type="button" class="info" data-t="TED" aria-label="What is TED-AI?">i</button></div><div class="big" id="r_TED_50"></div><div class="sm" id="r_TED_s"></div></div>
     <div class="res"><div class="nm"><i class="dot" style="background:var(--asi)"></i>ASI <button type="button" class="info" data-t="ASI" aria-label="What is ASI?">i</button></div><div class="big" id="r_ASI_50"></div><div class="sm" id="r_ASI_s"></div></div>
@@ -97,55 +116,72 @@ svg{display:block;width:100%;height:auto}
 
   <div class="sec">
     <div class="sechead">
-      <h2>The forecast: chance each milestone has been reached</h2>
-      <p class="sub">The dots mark the dates with a 30% and a 50% chance. The biggest lever is how likely you think a software-only explosion is.</p>
+      <div class="step">STEP 1 · WHAT METR FOUND</div>
+      <h2>Anthropic's models have been improving about twice as fast since October 2025</h2>
+      <p class="sub">On 5 November 2026 METR published an <a href="https://metr.org/blog/2026-11-05-anthropic-ai-rd-acceleration-assessment/">independent assessment</a> of how much AI is speeding up AI research at Anthropic, after eleven weeks with access to internal data. This is its main chart, redrawn. Each dot is an Anthropic model, scored on AECI, Anthropic's index of benchmark performance. METR's chart starts in 2024, so the three earlier points come from <a href="https://epoch.ai/eci">Epoch's public index</a>, which AECI is based on and which starts in 2023.</p>
     </div>
     <div class="pair">
-      <div class="plot" id="pProb"><svg id="cProb" role="img" aria-label="Chance each milestone has been reached, by date"></svg><div class="tip" id="tip" hidden></div></div>
+      <div class="plot"><svg id="cHist" role="img" aria-label="AECI scores of Anthropic models from 2024 to October 2026"></svg>
+        <div class="pub"><span><svg viewBox="-7 -7 14 14"><circle r="4.5" fill="#4a5157"/></svg>Released model</span><span><svg viewBox="-7 -7 14 14"><circle r="4" fill="#fff" stroke="#22272b" stroke-width="2"/></svg>Internal-only model</span><span><svg viewBox="-7 -7 14 14"><path d="M0 -6L6 0L0 6L-6 0Z" fill="#4a5157"/></svg>Earlier Anthropic model, rescaled from Epoch's public index</span><span><svg viewBox="-7 -7 14 14"><path d="M0 -5.5L5.5 4.5L-5.5 4.5Z" fill="#fff" stroke="#878d92" stroke-width="1.8"/></svg>Another lab's best model, rescaled the same way, not used in the fits</span><span>Scores from 2024 on are read off METR's chart, so they are approximate.</span></div></div>
       <div class="ctls">
-        <div class="grp">
-          <h3>How likely is each regime</h3>
-          <div class="split" id="split"><div class="e"></div><div class="b"></div><div class="o"></div></div>
-          <div class="splitkey"><span>Explosion</span><span>Compute-bounded</span><span>One-off</span></div>
-          <div class="ctl"><label for="wExp"><i class="sw"></i>Software-only explosion</label><output id="o_wExp"></output><input type="range" id="wExp" min="0" max="100" step="1"></div>
-          <div class="ctl"><label for="wOne"><i class="sw one"></i>One-off step</label><output id="o_wOne"></output><input type="range" id="wOne" min="0" max="100" step="1"></div>
-          <p class="hint">Compute-bounded gets the rest: <b id="o_wBnd"></b></p>
-        </div>
-        <div class="grp">
-          <h3>Uncertainty within a regime</h3>
-          <div class="ctl"><label for="sig">Spread around each median date</label><output id="o_sig"></output><input type="range" id="sig" min="0.1" max="1" step="0.05"></div>
-        </div>
+        <div class="grp"><h3>The report in five points</h3>
+          <ul class="pts">
+            <li><b>About 2x.</b> Scores have risen 1.9x as fast since October 2025. METR's range across methods is 1.1x to 2.9x.</li>
+            <li><b>Mostly due to AI.</b> METR thinks a majority of the speed-up comes from Anthropic's own use of AI, and that more chips do not explain it.</li>
+            <li><b>A change of slope, not a one-time jump.</b> A lasting slope change predicted the later models better than a single jump did.</li>
+            <li><b>Less at other labs.</b> Across all developers the speed-up is 1.4x.</li>
+            <li><b>Much is hidden.</b> Anthropic redacted most of the evidence METR found most informative. METR found no clear bottleneck to further speed-up, and says faster-than-exponential growth is possible.</li>
+          </ul></div>
+        <div class="grp"><h3>How to read the dots</h3>
+          <div class="seg" role="radiogroup" aria-label="How to read the dots"><label><input type="radio" name="fit" id="fitKink" checked><span>Two straight lines</span></label><label><input type="radio" name="fit" id="fitSmooth"><span>A line that curves away</span></label></div>
+          <p class="hint">Two lines: the pace changed once, in October 2025. A line that curves away: progress was on the old straight line until 2024 and has been pulling away from it faster and faster since, which is how an explosion would look from the inside. The straight line is fixed. The slider below changes only how sharply the curve leaves it. The explosion regime follows whichever you pick.</p>
+          <div id="slotT1"></div>
+          <p class="hint" id="fitNote"></p></div>
+        <div class="grp"><h3>Your read of the speed-up</h3>
+          <div class="ctl"><label for="r0">Pace since October 2025</label><output id="o_r0"></output><input type="range" id="r0" min="1" max="3" step="0.05"></div>
+          <p class="hint">As a multiple of the earlier pace. Every regime below starts from this.</p></div>
+      </div>
+    </div>
+    <p class="bridge">The report measures the past year. It cannot say what the line does next, and that is where most of the uncertainty in any forecast now sits.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sechead">
+      <div class="step">STEP 2 · WHERE IT GOES NEXT</div>
+      <h2>Three ways the pace could go from here</h2>
+      <p class="sub">The pace was steady until October 2025, then roughly doubled. The question is where it goes from here. The three regimes look the same today, and differ in what limits progress once AI does most of the research. Set how likely you think each one is, and how it behaves.</p>
+    </div>
+    <div class="plot"><svg id="cRate" role="img" aria-label="Pace of AI progress over time in each regime"></svg></div>
+    <div class="regs">
+      <div class="reg">
+        <div class="rh"><i class="sw"></i>Software-only explosion</div>
+        <p class="hint">Each improvement makes the next arrive sooner, even on fixed chips. Progress runs away within a year or two.</p>
+        <div class="ctl"><label for="wExp">How likely</label><output id="o_wExp"></output><input type="range" id="wExp" min="0" max="100" step="1"></div>
+        <p class="hint" id="expNote"></p>
+        <div id="slotT2"></div>
+        <div class="ctl" id="ctlT"><label for="T">Years until progress runs away</label><output id="o_T"></output><input type="range" id="T" min="0.6" max="4" step="0.05"></div>
+      </div>
+      <div class="reg">
+        <div class="rh"><i class="sw bnd"></i>Compute-bounded</div>
+        <p class="hint">AI does most of the research, so progress runs several times faster. It then levels off, because experiments still queue for chips.</p>
+        <div class="ctl"><label>How likely (the rest)</label><output id="o_wBnd"></output><div class="split" id="split"><div class="e"></div><div class="b"></div><div class="o"></div></div></div>
+        <div class="ctl"><label for="cap">Pace it levels off at</label><output id="o_cap"></output><input type="range" id="cap" min="1.5" max="10" step="0.1"></div>
+        <div class="ctl"><label for="k">How quickly it gets there</label><output id="o_k"></output><input type="range" id="k" min="0.3" max="2" step="0.05"></div>
+      </div>
+      <div class="reg">
+        <div class="rh"><i class="sw one"></i>One-off step</div>
+        <p class="hint">AI tools gave a single boost. Chips and headcount set the pace again, and it drifts back towards the old trend.</p>
+        <div class="ctl"><label for="wOne">How likely</label><output id="o_wOne"></output><input type="range" id="wOne" min="0" max="100" step="1"></div>
+        <div class="ctl"><label for="s">Pace it settles back to</label><output id="o_s"></output><input type="range" id="s" min="1" max="2" step="0.05"></div>
       </div>
     </div>
   </div>
 
   <div class="sec">
     <div class="sechead">
-      <div class="step">HOW THE FORECAST IS BUILT · STEP 1</div>
-      <h2>Each regime sets a pace for AI progress</h2>
-      <p class="sub">Pace as a multiple of the 2024 rate. All three regimes start from today's measured speed-up and then diverge.</p>
-    </div>
-    <div class="pair">
-      <div class="plot"><svg id="cRate" role="img" aria-label="Pace of AI progress over time in each regime"></svg></div>
-      <div class="ctls">
-        <div class="grp"><h3>Today</h3>
-          <div class="ctl"><label for="r0">Pace now</label><output id="o_r0"></output><input type="range" id="r0" min="1" max="3" step="0.05"></div></div>
-        <div class="grp"><h3>Explosion</h3>
-          <div class="ctl"><label for="T"><i class="sw"></i>Years until progress runs away</label><output id="o_T"></output><input type="range" id="T" min="0.6" max="4" step="0.05"></div></div>
-        <div class="grp"><h3>Compute-bounded</h3>
-          <div class="ctl"><label for="cap"><i class="sw bnd"></i>Pace it levels off at</label><output id="o_cap"></output><input type="range" id="cap" min="1.5" max="10" step="0.1"></div>
-          <div class="ctl"><label for="k"><i class="sw bnd"></i>How quickly it gets there</label><output id="o_k"></output><input type="range" id="k" min="0.3" max="2" step="0.05"></div></div>
-        <div class="grp"><h3>One-off step</h3>
-          <div class="ctl"><label for="s"><i class="sw one"></i>Pace it settles back to</label><output id="o_s"></output><input type="range" id="s" min="1" max="2" step="0.05"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="sechead">
-      <div class="step">STEP 2</div>
+      <div class="step">STEP 3 · HOW FAR THERE IS TO GO</div>
       <h2>Pace adds up to capability, and each milestone sits at a height</h2>
-      <p class="sub">Capability is the pace added up over time. A regime reaches a milestone where its curve crosses that milestone's line. Each dot is the median date.</p>
+      <p class="sub">This is the chart from step 1, carried forward, with 15 index points counted as one year of progress at the 2024 pace. Each regime's pace adds up to a capability curve. A regime reaches a milestone where its curve crosses that milestone's line, and each coloured dot is the median date.</p>
     </div>
     <div class="pair">
       <div class="plot"><svg id="cCap" role="img" aria-label="Capability over time in each regime, with milestone heights"></svg></div>
@@ -158,15 +194,38 @@ svg{display:block;width:100%;height:auto}
           <div class="ctl ted"><label for="hTED"><i class="dot" style="background:var(--ted)"></i>TED-AI: beats top experts <button type="button" class="info" data-t="TED" aria-label="What is TED-AI?">i</button></label><output id="o_hTED"></output><input type="range" id="hTED" min="3" max="25" step="0.5"></div>
           <div class="ctl asi"><label for="hASI"><i class="dot" style="background:var(--asi)"></i>ASI: superintelligence <button type="button" class="info" data-t="ASI" aria-label="What is ASI?">i</button></label><output id="o_hASI"></output><input type="range" id="hASI" min="4" max="40" step="0.5"></div>
         </div>
-        <p class="hint">SAR has two heights. If there is no explosion, the likeliest reason is that research taste proved hard to automate, so a superhuman researcher needs more progress.</p>
+        <p class="hint">SAR is a superhuman AI researcher. It has two heights: if there is no explosion, the likeliest reason is that research taste proved hard to automate, so it needs more progress. The heights are judgement calls, and nothing measured anchors them.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="forecast">
+    <div class="sechead">
+      <div class="step">STEP 4 · THE FORECAST</div>
+      <h2>Chance each milestone has been reached</h2>
+      <p class="sub">The model spreads uncertainty around each median date from step 3, then blends the three regimes by how likely you said each is. The dots on the curves mark a 30% and a 50% chance.</p>
+    </div>
+    <div class="pair">
+      <div class="plot" id="pProb"><svg id="cProb" role="img" aria-label="Chance each milestone has been reached, by date"></svg><div class="tip" id="tip" hidden></div>
+        <div class="pub"><label class="chk"><input type="checkbox" id="showPub" checked> Published forecasts, 7 to 10 November</label>
+          <span><svg viewBox="-7 -7 14 14"><path d="M0 -6L6 0L0 6L-6 0Z" fill="#878d92"/></svg>AI Futures Project, six authors: median dates, and chance of TED-AI by end of 2027</span>
+          <span><svg viewBox="-7 -7 14 14"><path d="M0 -6L6 5L-6 5Z" fill="#878d92"/></svg>Sentinel: ASI, 10% and 50%</span>
+          <span><svg viewBox="-7 -7 14 14"><path d="M0 -7L1.9 -2.4L6.7 -2.2L2.9 0.9L4.1 5.7L0 3L-4.1 5.7L-2.9 0.9L-6.7 -2.2L-1.9 -2.4Z" fill="#878d92"/></svg>Paul Christiano: AI able to overthrow governments</span>
+        </div></div>
+      <div class="ctls">
+        <div class="grp"><h3>Uncertainty within a regime</h3>
+          <div class="ctl"><label for="sig">Spread around each median date</label><output id="o_sig"></output><input type="range" id="sig" min="0.1" max="1" step="0.05"></div></div>
+        <div class="grp"><h3>What the terms mean</h3>
+          <p class="hint"><b>SAR:</b> matches the research taste of the best human researchers and fully automates coding.</p>
+          <p class="hint"><b>TED-AI:</b> at least as good as top human experts at virtually all cognitive tasks.</p>
+          <p class="hint"><b>ASI:</b> superintelligence.</p>
+          <p class="hint">The definitions are the <a href="https://www.aifuturesmodel.com/">AI Futures Project</a>'s. Hover over or tap an <span class="info-inline">i</span> for the full definition.</p></div>
       </div>
     </div>
   </div>
 
   <div class="note">
-    <p><b>Step 3 is the forecast at the top.</b> The model spreads uncertainty around each median date from step 2, then blends the three regimes by how likely each is.</p>
-    <p>SAR is a superhuman AI researcher. TED-AI is AI at least as good as top human experts at virtually all cognitive tasks. ASI is superintelligence. The milestone names and definitions are borrowed from the <a href="https://www.aifuturesmodel.com/">AI Futures Project</a>. Hover over or tap an <span class="info-inline">i</span> for a definition.</p>
-    <p>Every starting value is a judgement call. None is fitted to data.</p>
+    <p>Every starting value is a judgement call. None is fitted to data, apart from the pace in step 1.</p>
   </div>
 </div>
 
@@ -182,7 +241,6 @@ svg{display:block;width:100%;height:auto}
   var REG={exp:{name:"Explosion",stroke:C.ink,w:2.6,dash:""},bnd:{name:"Compute-bounded",stroke:C.ink2,w:2.2,dash:"8 5"},one:{name:"One-off step",stroke:C.mute,w:2.2,dash:"2 4"}};
   var FONT="Inter,system-ui,sans-serif";
   var $=function(id){return document.getElementById(id)};
-
   // Milestone definitions, borrowed from the AI Futures Project (aifuturesmodel.com, ai-2027.com).
   var DEFS={
     AC:"Automated Coder. An AI that can fully automate an AI company's coding work, replacing its entire software engineering staff.",
@@ -205,7 +263,6 @@ svg{display:block;width:100%;height:auto}
   document.addEventListener("click",function(e){var b=infoOf(e);if(b){e.preventDefault();showInfo(b)}else hideInfo()});
   document.addEventListener("keydown",function(e){if(e.key==="Escape")hideInfo()});
   window.addEventListener("scroll",hideInfo,{passive:true});
-
   function get(){var p={};for(var k in DEF)p[k]=parseFloat($(k).value);return p}
   function set(p){for(var k in DEF)$(k).value=p[k]}
   function dateLabel(d){if(!isFinite(d)||d>2100)return "after 2100";var y=Math.floor(d),m=Math.min(11,Math.floor((d-y)*12));return MON[m]+" "+y}
@@ -222,29 +279,74 @@ svg{display:block;width:100%;height:auto}
       one:{rate:function(u){return p.s+(p.r0-p.s)*Math.exp(-u/FADE)},cap:function(u){return p.s*u+FADE*(p.r0-p.s)*(1-Math.exp(-u/FADE))},
            cross:function(L){var lo=0,hi=400;for(var i=0;i<80;i++){var m=(lo+hi)/2;if(R.one.cap(m)<L)lo=m;else hi=m}return hi}}
     };
+    var smooth=$("fitSmooth").checked,fit=null;
+    if(smooth){
+      // a line that curves away: the straight line is fixed (the first of the two lines); from 2024 the curve leaves it
+      // with no jump and no kink, score = line + A*h(t), h = 1/(tc-t)^2 - 1/(tc-TS)^2 - 2(t-TS)/(tc-TS)^3; only A is fitted
+      var tc=T0+p.T,TS=2024,n=FITPTS.length,shh=0,shz=0,sse=0,d0=tc-TS;
+      var hh=function(t){return t>TS?1/Math.pow(tc-t,2)-1/(d0*d0)-2*(t-TS)/Math.pow(d0,3):0},line=function(t){return 149.5+15*(t-BRK)};
+      FITPTS.forEach(function(h){var x=hh(h[1]),z=h[2]-line(h[1]);shh+=x*x;shz+=x*z});
+      var fA=Math.max(0,shz/shh),score=function(t){return line(t)+fA*hh(t)};FITPTS.forEach(function(h){var e=score(h[1])-h[2];sse+=e*e});
+      var dl=(score(T0)-(149.5+15*p.r0*(T0-BRK)))/15,TT=p.T,h0=hh(T0),capS=function(u){return u<TT?dl+u+(fA/15)*(hh(T0+u)-h0):Infinity};
+      var rateS=function(u){return u>=TT?Infinity:(T0+u>TS?1+(fA/15)*(2/Math.pow(TT-u,3)-2/Math.pow(d0,3)):1)};
+      fit={A:fA,b:149.5,tc:tc,dl:dl,rmse:Math.sqrt(sse/(n-1)),now:rateS(0),score:score,line:line};
+      R.exp={rate:rateS,cap:capS,cross:function(L){if(capS(0)>=L)return 0.01;var lo=0,hi=TT;for(var i=0;i<60;i++){var m=(lo+hi)/2;if(capS(m)<L)lo=m;else hi=m}return Math.max(0.01,hi)}};
+    }
+    var ese=0,en=0;FITPTS.forEach(function(h){if(h[1]<BRK){var e=149.5+15*(h[1]-BRK)-h[2];ese+=e*e;en++}});
+    var kse=0;FITPTS.forEach(function(h){var e=149.5+15*(h[1]<BRK?1:p.r0)*(h[1]-BRK)-h[2];kse+=e*e});
     var wE=p.wExp/100,wO=p.wOne/100,wB=Math.max(0,1-wE-wO);
     var W={exp:wE,bnd:wB,one:wO},H={AC:p.hAC,SAR:p.hSAR,TED:p.hTED,ASI:p.hASI};
     function hgt(m,k){return (m==="SAR"&&k!=="exp")?p.hSARs:H[m]}
     function prob(m,t){var u=t-T0;if(u<=0)return 0;var s=0;for(var k in R){var d=R[k].cross(hgt(m,k));s+=W[k]*Phi(Math.log(u/d)/p.sig)}return s}
     function pct(m,q){var lo=T0,hi=T0+200;if(prob(m,hi)<q)return Infinity;for(var i=0;i<70;i++){var mid=(lo+hi)/2;if(prob(m,mid)<q)lo=mid;else hi=mid}return hi}
-    return {R:R,W:W,H:H,hgt:hgt,slow:p.hSARs,prob:prob,pct:pct};
+    return {R:R,W:W,H:H,hgt:hgt,slow:p.hSARs,r0:p.r0,T:p.T,fit:fit,kinkRmse:Math.sqrt(kse/(FITPTS.length-3)),earlyRmse:Math.sqrt(ese/(en-2)),prob:prob,pct:pct};
   }
 
   function el(parent,tag,attrs,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;parent.appendChild(e);return e}
   function txt(svg,x,y,s,o){o=o||{};return el(svg,"text",{x:x,y:y,"text-anchor":o.a||"start","font-size":o.size||12,fill:o.fill||C.ink2,"font-weight":o.w||400,"font-family":FONT,"paint-order":"stroke",stroke:o.halo===false?"none":C.bg,"stroke-width":o.halo===false?0:3,"stroke-linejoin":"round"},s)}
   function path(pts){var d="";for(var i=0;i<pts.length;i++)d+=(i?"L":"M")+pts[i][0].toFixed(1)+" "+pts[i][1].toFixed(1);return d}
   function setup(id,ratio,minH){var svg=$(id);while(svg.firstChild)svg.removeChild(svg.firstChild);var W=Math.max(300,Math.round(svg.parentNode.clientWidth)),H=Math.max(minH,Math.round(W*ratio));svg.setAttribute("viewBox","0 0 "+W+" "+H);el(svg,"rect",{x:0,y:0,width:W,height:H,fill:C.bg});return {svg:svg,W:W,H:H}}
-  // Year labels along the bottom, plus a vertical gridline at every year so the chart reads as a grid.
-  function yearTicks(svg,X,y0,y1,base,narrow,top){for(var y=y0;y<=y1;y++){el(svg,"line",{x1:X(y),x2:X(y),y1:top,y2:base,stroke:C.line,"stroke-width":1});if(narrow&&(y-y0)%2)continue;txt(svg,X(y),base+17,String(y),{a:"middle",halo:false})}}
+  function yearTicks(svg,X,y0,y1,base,narrow,top){for(var y=y0;y<=y1;y++){if(top!=null)el(svg,"line",{x1:X(y),x2:X(y),y1:top,y2:base,stroke:C.line,"stroke-width":1});if(narrow&&(y-y0)%2)continue;txt(svg,X(y),base+17,String(y),{a:"middle",halo:false})}}
   function todayLine(svg,X,top,bot){el(svg,"line",{x1:X(T0),x2:X(T0),y1:top,y2:bot,stroke:C.mute,"stroke-width":1,"stroke-dasharray":"3 3"});txt(svg,X(T0)+5,top+10,"today",{size:11.5,fill:C.mute})}
   function spread(items,minGap,lo,hi){items.sort(function(a,b){return a.y-b.y});for(var i=1;i<items.length;i++)if(items[i].y-items[i-1].y<minGap)items[i].y=items[i-1].y+minGap;var over=items.length?items[items.length-1].y-hi:0;if(over>0)for(var j=items.length-1;j>=0;j--){items[j].y=Math.min(items[j].y,hi-(items.length-1-j)*minGap)}return items}
 
+  var AECI=[["Claude 3 Opus",2024.16,124.9,0],["Claude 3.5 Sonnet",2024.46,130.2,0],["Claude 3.5 Sonnet (new)",2024.77,133.3,0],["Claude 3.7 Sonnet",2025.14,141.8,0],["Claude Opus 4",2025.38,144.9,0],["Claude Sonnet 4.5",2025.72,147.9,0],["Claude Opus 4.5",2025.88,152.4,0],["Claude Opus 4.6",2026.07,157.4,0],["Mythos Preview (early)",2026.15,162.5,1],["Mythos Preview",2026.25,165.8,1],["Mythos 5",2026.41,168.7,0],["Model 2 (early)",2026.52,171.9,1],["Model 2",2026.60,174.2,1],["Model 3 (early)",2026.69,176.5,1],["Model 3",2026.72,177.0,1],["Model 4",2026.74,178.6,1]];
+  // Earlier models from Epoch's public Capabilities Index, rescaled to AECI (AECI = 1.043*ECI - 5.53, fitted on eight models in both). Last field: 1 = Anthropic, 0 = another lab.
+  var PRE=[["GPT-4",2023.20,121.5,0],["Claude 2",2023.52,116.5,1],["GPT-4 Turbo",2024.07,124.6,0]];
+  var FITPTS=AECI.concat(PRE.filter(function(h){return h[3]}));
+  var BRK=2025.77;
+  function hist(M){var cA=-M.r0*(T0-BRK);return {cA:cA,past:function(t){return t<=BRK?cA-(BRK-t):-M.r0*(T0-t)},y:function(a){return cA+(a-149.5)/15}}}
+  function histDots(svg,X,Y,H,r){AECI.forEach(function(h){var d=el(svg,"circle",h[3]?{cx:X(h[1]),cy:Y(H.y(h[2])),r:r-0.5,fill:C.bg,stroke:C.ink,"stroke-width":1.8}:{cx:X(h[1]),cy:Y(H.y(h[2])),r:r,fill:C.ink2,stroke:C.bg,"stroke-width":1.4});el(d,"title",{},h[0]+(h[3]?" (internal only)":"")+": capability index "+h[2].toFixed(0))})}
+  function drawHist(M){
+    var c=setup("cHist",0.56,300),svg=c.svg,ml=38,mr=14,mt=14,mb=26,x0=2023,x1=2027.15,ymin=108,ymax=190,narrow=c.W<520;
+    var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){return mt+(1-(Math.max(ymin,Math.min(v,ymax))-ymin)/(ymax-ymin))*(c.H-mt-mb)};
+    for(var v=110;v<=190;v+=10){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:C.line,"stroke-width":1});txt(svg,ml-7,Y(v)+4,String(v),{a:"end",halo:false})}
+    yearTicks(svg,X,2023,2027,c.H-mb,false,mt);todayLine(svg,X,mt,c.H-mb);
+    var now=149.5+15*M.r0*(T0-BRK),old=149.5+15*(T0-BRK);
+    if(!M.fit)el(svg,"line",{x1:X(BRK),x2:X(T0),y1:Y(149.5),y2:Y(old),stroke:C.mute,"stroke-width":2,"stroke-dasharray":"6 5"});
+    var sm=!!M.fit;
+    if(!sm)el(svg,"path",{d:path([[X(x0),Y(149.5-15*(BRK-x0))],[X(BRK),Y(149.5)],[X(T0),Y(now)]]),fill:"none",stroke:C.ink,"stroke-width":2.6,"stroke-linejoin":"round"});
+    if(sm)el(svg,"line",{x1:X(x0),x2:X(T0),y1:Y(M.fit.line(x0)),y2:Y(M.fit.line(T0)),stroke:C.mute,"stroke-width":2,"stroke-dasharray":"6 5"});
+    if(sm){var cp=[];for(var i=0;i<=80;i++){var tt=x0+i*(T0-x0)/80;cp.push([X(tt),Y(M.fit.score(tt))])}el(svg,"path",{d:path(cp),fill:"none",stroke:C.ink,"stroke-width":2.6,"stroke-linejoin":"round"});
+      txt(svg,X(2026.2),Y(M.fit.score(2026.2))-34,narrow?"Curves away":"A line that curves away",{a:"end",fill:C.ink,w:600});txt(svg,X(2026.2),Y(M.fit.score(2026.2))-19,"now at "+M.fit.now.toFixed(2)+"x and rising",{a:"end",fill:C.ink2});
+      txt(svg,X(T0)-8,Y(M.fit.line(2025.9))+28,narrow?"+15 a year":"The straight line it started on",{a:"end",fill:C.ink2})}
+    PRE.forEach(function(h){var x=X(h[1]),y=Y(h[2]),d=h[3]?el(svg,"path",{d:"M"+x+" "+(y-6)+"L"+(x+6)+" "+y+"L"+x+" "+(y+6)+"L"+(x-6)+" "+y+"Z",fill:C.ink2,stroke:C.bg,"stroke-width":1.4}):el(svg,"path",{d:"M"+x+" "+(y-5.5)+"L"+(x+5.5)+" "+(y+4.5)+"L"+(x-5.5)+" "+(y+4.5)+"Z",fill:C.bg,stroke:C.mute,"stroke-width":1.8});
+      el(d,"title",{},h[0]+(h[3]?"":" (another lab)")+": about "+h[2].toFixed(0)+", rescaled from Epoch's index");if(!narrow){if(h[0]==="GPT-4 Turbo")txt(svg,x-8,y-9,h[0],{a:"end",size:11.5,fill:C.ink2});else txt(svg,x+9,y+(h[0]==="GPT-4"?-8:15),h[0],{size:11.5,fill:C.ink2})}});
+    AECI.forEach(function(h){var d=el(svg,"circle",h[3]?{cx:X(h[1]),cy:Y(h[2]),r:4,fill:C.bg,stroke:C.ink,"stroke-width":1.8}:{cx:X(h[1]),cy:Y(h[2]),r:4.5,fill:C.ink2,stroke:C.bg,"stroke-width":1.4});el(d,"title",{},h[0]+(h[3]?" (internal only)":"")+": "+h[2].toFixed(0))});
+    if(!sm)txt(svg,X(2025.0),Y(149.5-15*(BRK-2025.0))-16,"+15 points a year",{a:"end",fill:C.ink,w:600});
+    if(!M.fit)txt(svg,X(T0)-8,Y(old)+18,narrow?"old pace":"If the old pace had continued",{a:"end",fill:C.ink2});
+    var mid=(BRK+T0)/2+0.1;if(!sm)txt(svg,X(mid)-14,Y(149.5+15*M.r0*(mid-BRK))-10,"+"+Math.round(15*M.r0)+" a year: "+M.r0.toFixed(2)+"x",{a:"end",fill:C.ink,w:600});
+    if(!sm)txt(svg,X(BRK),c.H-mb-8,"October 2025",{a:"middle",fill:C.ink2,size:11.5});if(!sm)el(svg,"line",{x1:X(BRK),x2:X(BRK),y1:Y(149.5)+8,y2:c.H-mb-22,stroke:C.rule,"stroke-width":1});
+    $("fitNote").textContent=sm?"Average miss on Anthropic's models: the curve "+M.fit.rmse.toFixed(1)+" points, the two straight lines "+M.kinkRmse.toFixed(1)+", and the single straight line on the models before October 2025 "+M.earlyRmse.toFixed(1)+". The error bars on each dot are several points, so the data cannot tell the curve from the two lines.":"The two straight lines miss Anthropic's models by "+M.kinkRmse.toFixed(1)+" points on average, with the earlier line carried back to Claude 2 in 2023.";
+    $("expNote").textContent=sm?"On the curve the pace is already "+M.fit.now.toFixed(2)+"x. The date progress runs away is set in step 1, because it shapes the curve through the dots.":"Starts from the pace in step 1.";
+    if(!narrow){(sm?[0,3,15]:[0,3,5,7,15]).forEach(function(i){var h=AECI[i];txt(svg,X(h[1])+8,Y(h[2])+15,h[0],{size:11.5,fill:C.ink2})})}
+  }
   var probGeom=null;
   function drawProb(M){
-    var c=setup("cProb",0.5,280),svg=c.svg,ml=40,mr=62,mt=12,mb=26,x0=T0,x1=2036;
+    var c=setup("cProb",0.5,280),svg=c.svg,ml=40,mr=62,mt=12,mb=26,x0=T0,x1=2032;
     var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){return mt+(1-v)*(c.H-mt-mb)};
-    yearTicks(svg,X,2027,2036,c.H-mb,c.W<520,mt);
     [0,0.3,0.5,0.75,1].forEach(function(v){var key=(v===0.3||v===0.5);el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:key?C.rule:C.line,"stroke-width":1,"stroke-dasharray":key?"4 3":""});txt(svg,ml-7,Y(v)+4,Math.round(v*100)+"%",{a:"end",halo:false,w:key?600:400,fill:key?C.ink:C.ink2})});
+    yearTicks(svg,X,2027,2032,c.H-mb,false,mt);
     var labels=[];
     MS.forEach(function(m){
       var pts=[];for(var i=0;i<=220;i++){var t=x0+i*(x1-x0)/220;pts.push([X(t),Y(M.prob(m[0],t))])}
@@ -252,7 +354,17 @@ svg{display:block;width:100%;height:auto}
       [0.3,0.5].forEach(function(q){var d=M.pct(m[0],q);if(d<=x1)el(svg,"circle",{cx:X(d),cy:Y(q),r:4.5,fill:m[2],stroke:C.bg,"stroke-width":2})});
       labels.push({y:Y(M.prob(m[0],x1)),s:m[1],c:m[2],k:m[0]});
     });
-    spread(labels,15,mt+8,c.H-mb).forEach(function(l){el(svg,"circle",{cx:c.W-mr+9,cy:l.y,r:4,fill:l.c});var t=txt(svg,c.W-mr+17,l.y+4,l.s,{fill:C.ink,w:600,halo:false});el(t,"title",{},l.s+": "+DEFS[l.k])});
+    spread(labels,15,mt+8,c.H-mb).forEach(function(l){el(svg,"circle",{cx:c.W-mr+9,cy:l.y,r:4,fill:l.c});var lt=txt(svg,c.W-mr+17,l.y+4,l.s,{fill:C.ink,w:600,halo:false});el(lt,"title",{},l.s+": "+DEFS[l.k])});
+    if($("showPub").checked){
+      var mo=function(y,m){return y+(m-0.5)/12},shape={d:"M0 -6L6 0L0 6L-6 0Z",t:"M0 -6.5L6.5 5L-6.5 5Z",s:"M0 -9L2.4 -3.1L8.6 -2.8L3.7 1.2L5.3 7.3L0 3.9L-5.3 7.3L-3.7 1.2L-8.6 -2.8L-2.4 -3.1Z"};
+      var mark=function(t,v,col,sh,title){if(t>x1)return;var e=el(svg,"path",{d:shape[sh],transform:"translate("+X(t).toFixed(1)+" "+Y(v).toFixed(1)+")",fill:col,stroke:C.bg,"stroke-width":1.5});el(e,"title",{},title)};
+      var who=["Daniel","Eli","Romeo","Brendan","Lukas","Thomas"];
+      [mo(2027,5),mo(2027,8),mo(2027,8),mo(2027,9),mo(2027,11),mo(2027,11)].forEach(function(t,i){mark(t,0.52,C.sar,"d","AI Futures Project, "+who[i]+": median date for SAR, "+dateLabel(t))});
+      [[mo(2027,9),"Daniel"],[mo(2028,4),"Brendan"],[mo(2028,4),"Thomas"],[mo(2028,5),"Lukas"],[mo(2028,9),"Eli"],[mo(2028,9),"Romeo"]].forEach(function(a){mark(a[0],0.48,C.ted,"d","AI Futures Project, "+a[1]+": median date for TED-AI, "+dateLabel(a[0]))});
+      [[0.35,"Eli, Lukas and Thomas"],[0.38,"Romeo"],[0.45,"Brendan"],[0.65,"Daniel"]].forEach(function(a){mark(2028,a[0],C.ted,"d","AI Futures Project, "+a[1]+": "+Math.round(a[0]*100)+"% chance of TED-AI by end of 2027")});
+      mark(2027.2,0.10,C.asi,"t","Sentinel forecasters: 10% chance of ASI by early 2027");mark(2028.2,0.50,C.asi,"t","Sentinel forecasters: median date for ASI, early 2028");
+      mark(2027.86,1/3,C.ted,"s","Paul Christiano, 9 November: one-third chance within a year of AI able to overthrow governments");
+    }
     var g=el(svg,"g",{id:"hover",visibility:"hidden"});el(g,"line",{id:"hl",y1:mt,y2:c.H-mb,stroke:C.ink2,"stroke-width":1});
     MS.forEach(function(m){el(g,"circle",{id:"hd_"+m[0],r:4.5,fill:m[2],stroke:C.bg,"stroke-width":2})});
     probGeom={X:X,Y:Y,x0:x0,x1:x1,ml:ml,mr:mr,W:c.W,M:M};
@@ -269,11 +381,15 @@ svg{display:block;width:100%;height:auto}
   function unhover(){var h=$("hover");if(h)h.setAttribute("visibility","hidden");$("tip").hidden=true}
 
   function drawRate(M){
-    var c=setup("cRate",0.42,250),svg=c.svg,ml=40,mr=14,mt=12,mb=26,x0=T0-0.15,x1=2031,lo=Math.log(0.8),hi=Math.log(100);
+    var c=setup("cRate",0.32,250),svg=c.svg,ml=40,mr=14,mt=12,mb=26,x0=2024,x1=2031,lo=Math.log(0.8),hi=Math.log(100);
     var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){var q=Math.min(Math.max(v,0.8),100);return mt+(1-(Math.log(q)-lo)/(hi-lo))*(c.H-mt-mb)};
-    yearTicks(svg,X,2027,2031,c.H-mb,false,mt);
     [1,2,5,10,20,50,100].forEach(function(v){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:C.line,"stroke-width":1});txt(svg,ml-7,Y(v)+4,v+"x",{a:"end",halo:false})});
-    todayLine(svg,X,mt,c.H-mb);
+    yearTicks(svg,X,2024,2031,c.H-mb,c.W<420,mt);todayLine(svg,X,mt,c.H-mb);
+    el(svg,"path",{d:path([[X(x0),Y(1)],[X(BRK),Y(1)],[X(BRK),Y(M.r0)],[X(T0),Y(M.r0)]]),fill:"none",stroke:M.fit?C.ink2:C.ink,"stroke-width":M.fit?2:2.6,"stroke-linejoin":"round"});
+    txt(svg,X(2024.1),Y(1)+(M.fit?17:-9),c.W<520||M.fit?"1x":"1x: the pace from 2024 to October 2025",{fill:M.fit?C.ink2:C.ink,w:600});
+    txt(svg,X(T0)-8,Y(M.r0)+(M.fit?18:-9),M.r0.toFixed(2)+(M.fit?"x":"x since October 2025"),{a:"end",fill:M.fit?C.ink2:C.ink,w:600});
+    if(M.fit){var bp=[];for(var j=0;j<=80;j++){var tb=x0+j*(T0-x0)/80;bp.push([X(tb),Y(M.R.exp.rate(tb-T0))])}el(svg,"path",{d:path(bp),fill:"none",stroke:C.ink,"stroke-width":2.6,"stroke-linejoin":"round"});
+      if(c.W>=520)txt(svg,X(2026.2),Y(M.R.exp.rate(2026.2-T0))-14,"Explosion: a line that curves away",{a:"end",fill:C.ink,w:600})}
     var ends={};
     ["one","bnd","exp"].forEach(function(k){var pts=[],last;for(var i=0;i<=400;i++){var u=i*(x1-T0)/400,r=M.R[k].rate(u);if(!isFinite(r)||r>100){pts.push([X(T0+u),Y(100)]);break}pts.push([X(T0+u),Y(r)])}
       last=pts[pts.length-1];ends[k]=last;el(svg,"path",{d:path(pts),fill:"none",stroke:REG[k].stroke,"stroke-width":REG[k].w,"stroke-dasharray":REG[k].dash,"stroke-linejoin":"round"})});
@@ -283,25 +399,29 @@ svg{display:block;width:100%;height:auto}
   }
 
   function drawCap(M){
-    var c=setup("cCap",0.56,330),svg=c.svg,ml=34,mr=14,mt=14,mb=26,x0=T0-0.2,x1=2035,narrow=c.W<520;
+    var c=setup("cCap",0.56,330),svg=c.svg,ml=34,mr=14,mt=14,mb=26,x0=2024,x1=2035,narrow=c.W<520,ymin=-3.6;
     var ymax=Math.max(4,Math.max(M.H.ASI,M.slow)*1.15);
-    var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){return mt+(1-Math.min(v,ymax)/ymax)*(c.H-mt-mb)};
-    yearTicks(svg,X,2027,2035,c.H-mb,narrow,mt);
-    var step=ymax>24?8:ymax>12?4:ymax>6?2:1;for(var v=0;v<=ymax;v+=step){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:C.line,"stroke-width":1});txt(svg,ml-7,Y(v)+4,String(v),{a:"end",halo:false})}
-    todayLine(svg,X,mt,c.H-mb);
+    var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){return mt+(1-(Math.min(v,ymax)-ymin)/(ymax-ymin))*(c.H-mt-mb)};
+    var step=ymax>24?8:ymax>12?4:ymax>6?2:1;for(var v=Math.ceil(ymin/step)*step;v<=ymax;v+=step){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:C.line,"stroke-width":1});txt(svg,ml-7,Y(v)+4,String(v),{a:"end",halo:false})}
+    yearTicks(svg,X,2024,2035,c.H-mb,narrow,mt);todayLine(svg,X,mt,c.H-mb);
+    var Hh=hist(M),hp=[[X(x0),Y(Hh.past(x0))],[X(BRK),Y(Hh.cA)],[X(T0),Y(0)]];
+    el(svg,"path",{d:path(hp),fill:"none",stroke:M.fit?C.ink2:C.ink,"stroke-width":M.fit?1.8:2.6,"stroke-linejoin":"round"});
+    if(M.fit){var ep=[];for(var j=0;j<=80;j++){var ub=(x0-T0)*(1-j/80);ep.push([X(T0+ub),Y(M.R.exp.cap(ub))])}el(svg,"path",{d:path(ep),fill:"none",stroke:C.ink,"stroke-width":2.6,"stroke-linejoin":"round"})}
+    histDots(svg,X,Y,Hh,3.4);
+    if(!narrow)txt(svg,X(2024.1),Y(0.35),"Anthropic's models so far",{size:11.5,fill:C.ink2});
     var LV=[["AC",C.mute,"AC",M.H.AC,""],["SAR",C.sar,narrow?"SAR":"SAR, with an explosion",M.H.SAR,""],["SAR",C.sar,narrow?"SAR, no explosion":"SAR, without an explosion",M.slow,"6 4"],["TED",C.ted,"TED-AI",M.H.TED,""],["ASI",C.asi,"ASI",M.H.ASI,""]];
     LV.forEach(function(l){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(l[3]),y2:Y(l[3]),stroke:l[1],"stroke-width":1.6,"stroke-dasharray":l[4]})});
     var endPt={};
     ["one","bnd","exp"].forEach(function(k){var pts=[];for(var i=0;i<=500;i++){var u=i*(x1-T0)/500,q=M.R[k].cap(u);if(!isFinite(q)||q>ymax){pts.push([X(T0+u),Y(ymax)]);break}pts.push([X(T0+u),Y(q)])}
       endPt[k]=pts[pts.length-1];el(svg,"path",{d:path(pts),fill:"none",stroke:REG[k].stroke,"stroke-width":REG[k].w,"stroke-dasharray":REG[k].dash,"stroke-linejoin":"round"})});
-    LV.forEach(function(l){var t=txt(svg,c.W-mr-3,Y(l[3])-5,l[2],{a:"end",fill:C.ink,w:600});el(t,"title",{},DEFS[l[0]])});
+    LV.forEach(function(l){var lt=txt(svg,c.W-mr-3,Y(l[3])-5,l[2],{a:"end",fill:C.ink,w:600});el(lt,"title",{},DEFS[l[0]])});
     [["AC",C.mute],["SAR",C.sar],["TED",C.ted],["ASI",C.asi]].forEach(function(m){["exp","bnd","one"].forEach(function(k){
       var hh=M.hgt(m[0],k),d=T0+M.R[k].cross(hh);if(!(d<=x1))return;
       el(svg,"circle",{cx:X(d),cy:Y(hh),r:5,fill:m[1],stroke:C.bg,"stroke-width":2});
       if(m[0]==="AC")return;
       if(narrow)return;
       if(k==="exp")txt(svg,X(d)-9,Y(hh)-7,dateLabel(d),{a:"end",size:11.5,fill:C.ink});else if(X(d)>c.W-mr-70)txt(svg,X(d)-8,Y(hh)+16,dateLabel(d),{a:"end",size:11.5,fill:C.ink});else txt(svg,X(d)+8,Y(hh)+15,dateLabel(d),{size:11.5,fill:C.ink})})});
-    if(!narrow){txt(svg,endPt.exp[0]+8,mt+12,"Explosion",{fill:C.ink,w:600});
+    if(!narrow){txt(svg,endPt.exp[0]+8,mt+26,"Explosion",{fill:C.ink,w:600});
       var bx=endPt.bnd,ox=endPt.one;txt(svg,Math.min(bx[0]+8,c.W-mr-110),Math.max(bx[1]+12,mt+12),"Compute-bounded",{fill:C.ink,w:600,a:bx[0]>c.W-mr-120?"end":"start"});
       var uo=2030.6-T0,qo=Math.min(M.R.one.cap(uo),ymax);txt(svg,X(T0+uo)+10,Y(qo)+20,"One-off step",{fill:C.ink,w:600})}
     else{txt(svg,ml+6,mt+12,"solid: explosion · dashed: compute-bounded · dotted: one-off",{size:10.5,fill:C.ink2})}
@@ -317,12 +437,17 @@ svg{display:block;width:100%;height:auto}
     if(p.wExp+p.wOne>100){if(src==="wOne"){p.wExp=100-p.wOne;$("wExp").value=p.wExp}else{p.wOne=100-p.wExp;$("wOne").value=p.wOne}}
     for(var k in DEF)$("o_"+k).textContent=FMT[k](p[k]);
     $("o_wBnd").textContent=Math.max(0,100-p.wExp-p.wOne)+"%";
-    var M=model(p);results(M,p);unhover();drawProb(M);drawRate(M);drawCap(M);
+    var slot=$($("fitSmooth").checked?"slotT1":"slotT2"),ct=$("ctlT");if(ct.parentNode!==slot)slot.appendChild(ct);
+    var M=model(p);results(M,p);unhover();drawHist(M);drawRate(M);drawCap(M);drawProb(M);
   }
   function start(){
     set(DEF);
-    for(var k in DEF)(function(id){$(id).addEventListener("input",function(){render(id)})})(k);
-    $("reset").addEventListener("click",function(){set(DEF);render()});
+    for(var k in DEF)(function(id){$(id).addEventListener("input",function(){$("preset").value="custom";render(id)})})(k);
+    // settings that roughly reproduce other published forecasts inside this model
+    var PRESETS={"default":{},aifp:{wExp:70,wOne:5,T:1.9,sig:0.5,smooth:true},paul:{wExp:67,wOne:8,T:1.75,smooth:true},sentinel:{wExp:55,wOne:15,T:0.9,sig:0.65,smooth:true}};
+    function applyPreset(name){var v=PRESETS[name];if(!v)return;var q={};for(var k in DEF)q[k]=(k in v)?v[k]:DEF[k];set(q);$(v.smooth?"fitSmooth":"fitKink").checked=true;$("preset").value=name;render()}
+    $("preset").addEventListener("change",function(){applyPreset($("preset").value)});
+    $("reset").addEventListener("click",function(){applyPreset("default")});$("fitKink").addEventListener("change",function(){$("preset").value="custom";render()});$("fitSmooth").addEventListener("change",function(){$("preset").value="custom";render()});$("showPub").addEventListener("change",function(){render()});$("skip").addEventListener("click",function(){$("forecast").scrollIntoView({behavior:"smooth",block:"start"})});
     var pp=$("pProb");pp.addEventListener("pointermove",hover);pp.addEventListener("pointerdown",hover);pp.addEventListener("pointerleave",unhover);
     var tm;window.addEventListener("resize",function(){clearTimeout(tm);tm=setTimeout(function(){render()},80)});
     render();
