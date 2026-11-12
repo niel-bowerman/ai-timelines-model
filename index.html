@@ -52,13 +52,19 @@ svg{width:100%;height:auto;display:block;max-width:100%}
 .legend i{display:inline-block;width:26px;height:0;border-top:3px solid var(--ink)}
 .note{background:var(--panel);border-radius:10px;padding:14px 16px;font-size:13.5px;color:var(--ink2)}
 .note p+p{margin-top:8px}
+.note a{color:var(--ink)}
+.tip,.tip-inline{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;padding:0;margin-left:2px;border-radius:50%;border:1px solid var(--mute);background:transparent;color:var(--ink2);font:600 10.5px/1 var(--font);font-style:italic;vertical-align:1px;cursor:help}
+.tip:hover,.tip:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tip:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.tip-inline{cursor:default}
+#tipbox{position:absolute;z-index:10;max-width:min(300px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:13px;line-height:1.45;font-weight:400;padding:9px 11px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none}
 @media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>AI Timelines Model</h1>
-  <p class="lede">Niel and Claude's model of how AI progress could unfold after the METR report. Move the sliders to change an assumption and the forecast updates. The starting values are the ones used in the memo.</p>
+  <p class="lede">Niel and Claude's model of how AI progress could unfold after the METR report. Move the sliders to change an assumption and the forecast updates.</p>
 
   <div class="grid">
     <div class="rail" id="rail">
@@ -88,16 +94,16 @@ svg{width:100%;height:auto;display:block;max-width:100%}
       <div class="group">
         <h3>How far away each milestone is</h3>
         <p style="font-size:12.5px;color:var(--ink2)">In years of 2024-pace progress beyond today.</p>
-        <div class="ctl"><label for="hAC">AC: automated coder</label><output id="o_hAC"></output><input type="range" id="hAC" min="0.3" max="4" step="0.1"></div>
-        <div class="ctl"><label for="hSAR">SAR: superhuman AI researcher</label><output id="o_hSAR"></output><input type="range" id="hSAR" min="1" max="10" step="0.1"></div>
-        <div class="ctl"><label for="hTED">TED-AI: beats top experts</label><output id="o_hTED"></output><input type="range" id="hTED" min="3" max="25" step="0.5"></div>
-        <div class="ctl"><label for="hASI">ASI: superintelligence</label><output id="o_hASI"></output><input type="range" id="hASI" min="4" max="40" step="0.5"></div>
+        <div class="ctl"><label for="hAC">AC: automated coder <button type="button" class="tip" data-t="AC" aria-label="What is AC?">i</button></label><output id="o_hAC"></output><input type="range" id="hAC" min="0.3" max="4" step="0.1"></div>
+        <div class="ctl"><label for="hSAR">SAR: superhuman AI researcher <button type="button" class="tip" data-t="SAR" aria-label="What is SAR?">i</button></label><output id="o_hSAR"></output><input type="range" id="hSAR" min="1" max="10" step="0.1"></div>
+        <div class="ctl"><label for="hTED">TED-AI: beats top experts <button type="button" class="tip" data-t="TED" aria-label="What is TED-AI?">i</button></label><output id="o_hTED"></output><input type="range" id="hTED" min="3" max="25" step="0.5"></div>
+        <div class="ctl"><label for="hASI">ASI: superintelligence <button type="button" class="tip" data-t="ASI" aria-label="What is ASI?">i</button></label><output id="o_hASI"></output><input type="range" id="hASI" min="4" max="40" step="0.5"></div>
       </div>
       <div class="group">
         <h3>Uncertainty within a regime</h3>
         <div class="ctl"><label for="sig">Spread around each regime's median date</label><output id="o_sig"></output><input type="range" id="sig" min="0.1" max="1" step="0.05"></div>
       </div>
-      <button id="reset" type="button">Reset to the memo's settings</button>
+      <button id="reset" type="button">Reset to the default settings</button>
     </div>
 
     <div class="main">
@@ -115,7 +121,7 @@ svg{width:100%;height:auto;display:block;max-width:100%}
         <h2>Chance each milestone has been reached</h2>
         <p>The three regimes blended by their probabilities. The dashed line marks 30%.</p>
         <svg id="cProb" viewBox="0 0 760 330" role="img" aria-label="Probability each milestone has been reached by date"></svg>
-        <div class="legend"><span><i style="border-color:var(--teal)"></i>SAR</span><span><i style="border-color:var(--orange)"></i>TED-AI</span><span><i style="border-color:var(--ink)"></i>ASI</span></div>
+        <div class="legend"><span><i style="border-color:var(--teal)"></i>SAR <button type="button" class="tip" data-t="SAR" aria-label="What is SAR?">i</button></span><span><i style="border-color:var(--orange)"></i>TED-AI <button type="button" class="tip" data-t="TED" aria-label="What is TED-AI?">i</button></span><span><i style="border-color:var(--ink)"></i>ASI <button type="button" class="tip" data-t="ASI" aria-label="What is ASI?">i</button></span></div>
       </div>
 
       <div class="chart">
@@ -134,8 +140,8 @@ svg{width:100%;height:auto;display:block;max-width:100%}
 
       <div class="note">
         <p><b>How the model works.</b> Each regime has a curve for the pace of progress. Adding up the pace over time gives capability. A regime reaches a milestone when capability crosses the milestone's height. The model then spreads uncertainty around each crossing date and blends the three regimes by their probabilities.</p>
-        <p><b>How this differs from the memo.</b> The memo's headline probabilities were set by hand for each regime. Here they follow from the curves, so the numbers differ. The largest difference is SAR, which comes out earlier here.</p>
         <p>Every starting value is a judgement call. None is fitted to data.</p>
+        <p>Milestone names and definitions are borrowed from the <a href="https://www.aifuturesmodel.com/">AI Futures Project</a>. Hover over or tap an <span class="tip-inline">i</span> for a definition.</p>
       </div>
     </div>
   </div>
@@ -149,6 +155,27 @@ svg{width:100%;height:auto;display:block;max-width:100%}
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var C={teal:"#2ebdd1",orange:"#fa6900",ink:"#2a2e30",ink2:"#484e51",mute:"#8e9092",line:"#dddddd",bg:"#ffffff"};
   var $=function(id){return document.getElementById(id)};
+  var DEFS={
+    AC:"Automated Coder. An AI that can fully automate an AI company's coding work, replacing its entire software engineering staff.",
+    SAR:"Superhuman AI Researcher. An AI that can fully automate AI research: it does the job of the best human AI researcher, but faster and cheaply enough to run lots of copies.",
+    TED:"Top-Expert-Dominating AI. An AI that is at least as good as top human experts at virtually all cognitive tasks.",
+    ASI:"Artificial Superintelligence. The gap between an ASI and the best humans is twice the gap between the best humans and the median professional, at virtually all cognitive tasks."
+  };
+  var tipBox=document.createElement("div");tipBox.id="tipbox";tipBox.setAttribute("role","tooltip");tipBox.hidden=true;document.body.appendChild(tipBox);
+  var tipOwner=null;
+  function showTip(b){var d=DEFS[b.getAttribute("data-t")];if(!d)return;tipOwner=b;tipBox.textContent=d;tipBox.hidden=false;
+    var r=b.getBoundingClientRect(),w=tipBox.offsetWidth,h=tipBox.offsetHeight,vw=document.documentElement.clientWidth;
+    var left=Math.min(Math.max(8,r.left+r.width/2-w/2),vw-w-8),top=r.top-h-8;if(top<8)top=r.bottom+8;
+    tipBox.style.left=(left+window.scrollX)+"px";tipBox.style.top=(top+window.scrollY)+"px";b.setAttribute("aria-describedby","tipbox")}
+  function hideTip(){tipBox.hidden=true;if(tipOwner)tipOwner.removeAttribute("aria-describedby");tipOwner=null}
+  function tipOf(e){return e.target&&e.target.closest?e.target.closest(".tip"):null}
+  document.addEventListener("mouseover",function(e){var b=tipOf(e);if(b)showTip(b)});
+  document.addEventListener("mouseout",function(e){var b=tipOf(e);if(b&&b===tipOwner&&!b.contains(e.relatedTarget))hideTip()});
+  document.addEventListener("focusin",function(e){var b=tipOf(e);if(b)showTip(b)});
+  document.addEventListener("focusout",function(e){if(tipOf(e))hideTip()});
+  document.addEventListener("click",function(e){var b=tipOf(e);if(b){e.preventDefault();showTip(b)}else hideTip()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")hideTip()});
+  window.addEventListener("scroll",hideTip,{passive:true});
   function get(){var p={};for(var k in DEF){p[k]=parseFloat($(k).value)}return p}
   function set(p){for(var k in DEF){$(k).value=p[k]}}
   function dateLabel(d){if(!isFinite(d)||d>2100)return "after 2100";var y=Math.floor(d),m=Math.min(11,Math.floor((d-y)*12));return MON[m]+" "+y}
@@ -183,6 +210,7 @@ svg{width:100%;height:auto;display:block;max-width:100%}
     var X=function(v){return o.ml+(v-o.x0)/(o.x1-o.x0)*(o.W-o.ml-o.mr)};
     svgEl(svg,"rect",{x:0,y:0,width:o.W,height:o.H,fill:C.bg});
     o.yticks.forEach(function(t){svgEl(svg,"line",{x1:o.ml,x2:o.W-o.mr,y1:t.y,y2:t.y,stroke:C.line,"stroke-width":1});svgEl(svg,"text",{x:o.ml-8,y:t.y+4,"text-anchor":"end","font-size":12,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},t.l)});
+    o.xticks.forEach(function(t){var x=X(t.v);if(x>=o.ml-0.5&&x<=o.W-o.mr+0.5)svgEl(svg,"line",{x1:x,x2:x,y1:o.mt,y2:o.H-o.mb,stroke:C.line,"stroke-width":1})});
     o.xticks.forEach(function(t){svgEl(svg,"text",{x:X(t.v),y:o.H-o.mb+18,"text-anchor":"middle","font-size":12,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},t.l)});
     return X;
   }
@@ -214,7 +242,7 @@ svg{width:100%;height:auto;display:block;max-width:100%}
     svgEl(svg,"text",{x:X(T0)+5,y:o.mt+11,"font-size":11.5,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},"today");
     var LV=[["AC",C.mute,"AC"],["SAR",C.teal,"SAR"],["TED",C.orange,"TED-AI"],["ASI",C.ink,"ASI"]];
     LV.forEach(function(l){var yy=Y(M.H[l[0]]);svgEl(svg,"line",{x1:o.ml,x2:o.W-o.mr,y1:yy,y2:yy,stroke:l[1],"stroke-width":1.8});
-      svgEl(svg,"text",{x:o.W-o.mr-4,y:yy-5,"text-anchor":"end","font-size":12,fill:C.ink,"font-weight":600,"font-family":"Inter,system-ui,sans-serif"},l[2])});
+      var lt=svgEl(svg,"text",{x:o.W-o.mr-4,y:yy-5,"text-anchor":"end","font-size":12,fill:C.ink,"font-weight":600,"font-family":"Inter,system-ui,sans-serif"},l[2]);svgEl(lt,"title",{},l[2]+": "+DEFS[l[0]])});
     ["one","bnd","exp"].forEach(function(k){var pts=[];for(var i=0;i<=400;i++){var u=i*(o.x1-T0)/400;var c=M.R[k].cap(u);if(!isFinite(c)||c>ymax){pts.push([X(T0+u),Y(ymax)]);break}pts.push([X(T0+u),Y(c)])}
       svgEl(svg,"path",{d:pathFrom(pts),fill:"none",stroke:STY[k].stroke,"stroke-width":STY[k].w,"stroke-dasharray":STY[k].dash,"stroke-linejoin":"round"})});
     var NAME={exp:"Explosion",bnd:"Compute-bounded",one:"One-off step"};
@@ -238,7 +266,7 @@ svg{width:100%;height:auto;display:block;max-width:100%}
 
   function table(M){
     var rows=[["SAR","SAR",C.teal],["TED","TED-AI",C.orange],["ASI","ASI",C.ink]],h="";
-    rows.forEach(function(r){h+="<tr><td><span class=\"sw\" style=\"background:"+r[2]+"\"></span>"+r[1]+"</td><td>"+dateLabel(M.pct(r[0],0.3))+"</td><td>"+dateLabel(M.pct(r[0],0.5))+"</td><td>"+Math.round(M.prob(r[0],2028)*100)+"%</td><td>"+Math.round(M.prob(r[0],2029)*100)+"%</td></tr>"});
+    rows.forEach(function(r){h+="<tr><td><span class=\"sw\" style=\"background:"+r[2]+"\"></span>"+r[1]+" <button type=\"button\" class=\"tip\" data-t=\""+r[0]+"\" aria-label=\"What is "+r[1]+"?\">i</button></td><td>"+dateLabel(M.pct(r[0],0.3))+"</td><td>"+dateLabel(M.pct(r[0],0.5))+"</td><td>"+Math.round(M.prob(r[0],2028)*100)+"%</td><td>"+Math.round(M.prob(r[0],2029)*100)+"%</td></tr>"});
     $("tbody").innerHTML=h;
   }
 
