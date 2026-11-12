@@ -7,177 +7,207 @@
 <meta name="description" content="An interactive model of how AI progress could unfold: three regimes, four milestones, adjustable assumptions.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
 <style>
-/* Layout: controls in a left rail, results and three charts on the right; one column on phones. Single light look by choice. */
+/* Layout: the answer first (a results bar that stays in view, then the forecast chart), then the two steps that
+   produce it, in causal order. Every chart sits beside the controls that move it. Colour means milestone;
+   line style means regime. Single light look by choice. */
 :root{
   color-scheme:light;
-  --bg:#ffffff; --panel:#f6f7f7; --ink:#2a2e30; --ink2:#484e51; --mute:#8e9092; --line:#dddddd;
-  --teal:#2ebdd1; --orange:#fa6900; --yellow:#ffb012;
-  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg:#ffffff; --panel:#f5f6f7; --ink:#22272b; --ink2:#4a5157; --mute:#878d92; --line:#e3e5e7; --rule:#c9cdd0;
+  --sar:#2a78d6; --ted:#d9730d; --asi:#7a3fc0;
+  --display:"Space Grotesk","Inter",system-ui,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5}
-.wrap{max-width:1180px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1{font-size:28px;line-height:1.2;margin:0 0 6px;font-weight:700;text-wrap:balance}
-h2{font-size:17px;margin:0 0 4px;font-weight:700;text-wrap:balance}
-h3{font-size:12px;margin:0 0 8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
-p{margin:0;max-width:68ch}
-.lede{color:var(--ink2);margin-bottom:22px}
-.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:28px;align-items:start}
-.rail{background:var(--panel);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:20px}
-.group{display:flex;flex-direction:column;gap:10px}
-.ctl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:baseline}
-.ctl label{font-size:13.5px;color:var(--ink)}
-.ctl output{font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink)}
-.ctl input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--teal);margin:2px 0 0}
-.ctl input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-.derived{font-size:13.5px;color:var(--ink2);display:flex;justify-content:space-between}
-.derived b{font-variant-numeric:tabular-nums;color:var(--ink)}
-button{font:inherit;font-weight:600;background:var(--ink);color:var(--bg);border:0;border-radius:8px;padding:9px 14px;cursor:pointer}
-button:hover{background:var(--ink2)}
-button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-.main{display:flex;flex-direction:column;gap:30px;min-width:0}
-.tablebox{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:460px;font-variant-numeric:tabular-nums}
-th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:14px}
-th{font-weight:600;color:var(--ink2);font-size:12.5px}
-td:first-child{font-weight:600}
-.sw{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:baseline}
-.chart{display:flex;flex-direction:column;gap:6px;min-width:0}
-.chart p{color:var(--ink2);font-size:13.5px}
-svg{width:100%;height:auto;display:block;max-width:100%}
-.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink2)}
-.legend span{display:inline-flex;align-items:center;gap:7px}
-.legend i{display:inline-block;width:26px;height:0;border-top:3px solid var(--ink)}
-.note{background:var(--panel);border-radius:10px;padding:14px 16px;font-size:13.5px;color:var(--ink2)}
-.note p+p{margin-top:8px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+[hidden]{display:none!important}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:36px}
+h1{font-family:var(--display);font-size:30px;line-height:1.15;margin:0;font-weight:700;text-wrap:balance}
+h2{font-family:var(--display);font-size:20px;line-height:1.25;margin:0;font-weight:600;text-wrap:balance}
+h3{font-size:11.5px;margin:0;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}
+p{margin:0;max-width:66ch}
+.head{display:flex;flex-direction:column;gap:8px}
+.lede{color:var(--ink2);font-size:16px}
+.step{font-family:var(--display);font-weight:600;font-size:13px;color:var(--mute);letter-spacing:.04em}
+.sub{color:var(--ink2);font-size:14px}
+
+/* results bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--rule);padding-block:10px;display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center}
+.res{display:flex;flex-direction:column;min-width:0}
+.res .nm{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.res .big{font-family:var(--display);font-size:21px;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums;white-space:nowrap}
+.res .sm{font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.toprow{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center;justify-content:space-between}
+.bar .lab{font-size:12.5px;color:var(--ink2);max-width:13ch;line-height:1.3}
+button{font:inherit;font-size:13.5px;font-weight:600;background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:8px;padding:7px 12px;cursor:pointer}
+button:hover{background:var(--panel)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* sections: chart beside its controls */
+.sec{display:flex;flex-direction:column;gap:14px}
+.sechead{display:flex;flex-direction:column;gap:4px}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start}
+.plot{position:relative;min-width:0}
+svg{display:block;width:100%;height:auto}
+.ctls{background:var(--panel);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.grp{display:flex;flex-direction:column;gap:9px}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 10px;align-items:baseline}
+.ctl label{font-size:13.5px;display:flex;align-items:center;gap:7px}
+.ctl output{font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.ctl input[type=range]{grid-column:1/-1;width:100%;margin:3px 0 0;accent-color:var(--ink)}
+.ctl.sar input{accent-color:var(--sar)} .ctl.ted input{accent-color:var(--ted)} .ctl.asi input{accent-color:var(--asi)}
+.sw{width:22px;height:0;border-top:3px solid var(--ink);flex:none}
+.sw.bnd{border-top-style:dashed;border-color:var(--ink2)} .sw.one{border-top-style:dotted;border-color:var(--mute)}
+.hint{font-size:12.5px;color:var(--ink2)}
+.split{display:flex;gap:2px;height:26px;border-radius:5px;overflow:hidden}
+.split div{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;min-width:0;overflow:hidden;white-space:nowrap;font-variant-numeric:tabular-nums}
+.split .e{background:var(--ink);color:#fff} .split .b{background:#8d949a;color:#fff} .split .o{background:#d3d7da;color:var(--ink)}
+.splitkey{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)}
+.tip{position:absolute;top:4px;pointer-events:none;background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:7px 10px;font-size:12.5px;line-height:1.45;font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.tip b{font-weight:600} .tip span{display:flex;align-items:center;gap:6px}
+.note{border-top:1px solid var(--rule);padding-top:16px;font-size:13.5px;color:var(--ink2);display:flex;flex-direction:column;gap:8px}
 .note a{color:var(--ink)}
-.tip,.tip-inline{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;padding:0;margin-left:2px;border-radius:50%;border:1px solid var(--mute);background:transparent;color:var(--ink2);font:600 10.5px/1 var(--font);vertical-align:1px;cursor:help}
-.tip:hover,.tip:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--bg)}
-.tip:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-.tip-inline{cursor:default}
-#tipbox{position:absolute;z-index:10;max-width:min(300px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:13px;line-height:1.45;font-weight:400;padding:9px 11px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none}
-@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* milestone definitions: a small (i) button with a floating definition */
+.info,.info-inline{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;padding:0;margin:0 0 0 1px;border-radius:50%;border:1px solid var(--mute);background:transparent;color:var(--ink2);font:600 10.5px/1 var(--body);vertical-align:1px;cursor:help}
+.info:hover,.info:focus-visible{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.info:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.info-inline{cursor:default}
+#infobox{position:absolute;z-index:20;max-width:min(300px,calc(100vw - 16px));background:var(--ink);color:#fff;font-size:13px;line-height:1.45;font-weight:400;padding:9px 11px;border-radius:7px;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none}
+
+@media (max-width:860px){.pair{grid-template-columns:minmax(0,1fr)}.bar .lab{display:none}.res .big{font-size:17px}.bar{gap:6px 18px}.res .sm{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>AI Timelines Model</h1>
-  <p class="lede">Niel and Claude's model of how AI progress could unfold after the METR report. Move the sliders to change an assumption and the forecast updates.</p>
+  <div class="head">
+    <div class="toprow"><h1>AI Timelines Model</h1><button id="reset" type="button">Reset to default settings</button></div>
+    <p class="lede">Niel Bowerman and Claude's model of how AI progress could unfold after the METR report. Move any slider and the forecast updates.</p>
+  </div>
 
-  <div class="grid">
-    <div class="rail" id="rail">
-      <div class="group">
-        <h3>How likely is each regime</h3>
-        <div class="ctl"><label for="wExp">Software-only explosion</label><output id="o_wExp"></output><input type="range" id="wExp" min="0" max="100" step="1"></div>
-        <div class="ctl"><label for="wOne">One-off step</label><output id="o_wOne"></output><input type="range" id="wOne" min="0" max="100" step="1"></div>
-        <div class="derived"><span>Compute-bounded (the remainder)</span><b id="o_wBnd"></b></div>
-      </div>
-      <div class="group">
-        <h3>Where we are today</h3>
-        <div class="ctl"><label for="r0">Pace now, as a multiple of the 2024 pace</label><output id="o_r0"></output><input type="range" id="r0" min="1" max="3" step="0.05"></div>
-      </div>
-      <div class="group">
-        <h3>Explosion regime</h3>
-        <div class="ctl"><label for="T">Years until progress runs away</label><output id="o_T"></output><input type="range" id="T" min="0.6" max="4" step="0.05"></div>
-      </div>
-      <div class="group">
-        <h3>Compute-bounded regime</h3>
-        <div class="ctl"><label for="cap">Pace it levels off at</label><output id="o_cap"></output><input type="range" id="cap" min="1.5" max="10" step="0.1"></div>
-        <div class="ctl"><label for="k">How quickly it gets there</label><output id="o_k"></output><input type="range" id="k" min="0.3" max="2" step="0.05"></div>
-      </div>
-      <div class="group">
-        <h3>One-off step regime</h3>
-        <div class="ctl"><label for="s">Pace it settles back to</label><output id="o_s"></output><input type="range" id="s" min="1" max="2" step="0.05"></div>
-      </div>
-      <div class="group">
-        <h3>How far away each milestone is</h3>
-        <p style="font-size:12.5px;color:var(--ink2)">In years of 2024-pace progress beyond today.</p>
-        <div class="ctl"><label for="hAC">AC: automated coder <button type="button" class="tip" data-t="AC" aria-label="What is AC?">i</button></label><output id="o_hAC"></output><input type="range" id="hAC" min="0.3" max="4" step="0.1"></div>
-        <div class="ctl"><label for="hSAR">SAR: superhuman AI researcher <button type="button" class="tip" data-t="SAR" aria-label="What is SAR?">i</button></label><output id="o_hSAR"></output><input type="range" id="hSAR" min="1" max="10" step="0.1"></div>
-        <div class="ctl"><label for="hTED">TED-AI: beats top experts <button type="button" class="tip" data-t="TED" aria-label="What is TED-AI?">i</button></label><output id="o_hTED"></output><input type="range" id="hTED" min="3" max="25" step="0.5"></div>
-        <div class="ctl"><label for="hASI">ASI: superintelligence <button type="button" class="tip" data-t="ASI" aria-label="What is ASI?">i</button></label><output id="o_hASI"></output><input type="range" id="hASI" min="4" max="40" step="0.5"></div>
-      </div>
-      <div class="group">
-        <h3>Uncertainty within a regime</h3>
-        <div class="ctl"><label for="sig">Spread around each regime's median date</label><output id="o_sig"></output><input type="range" id="sig" min="0.1" max="1" step="0.05"></div>
-      </div>
-      <button id="reset" type="button">Reset to default settings</button>
+  <div class="bar" id="bar">
+    <div class="lab">Date each milestone is as likely as not</div>
+    <div class="res"><div class="nm"><i class="dot" style="background:var(--sar)"></i>SAR <button type="button" class="info" data-t="SAR" aria-label="What is SAR?">i</button></div><div class="big" id="r_SAR_50"></div><div class="sm" id="r_SAR_s"></div></div>
+    <div class="res"><div class="nm"><i class="dot" style="background:var(--ted)"></i>TED-AI <button type="button" class="info" data-t="TED" aria-label="What is TED-AI?">i</button></div><div class="big" id="r_TED_50"></div><div class="sm" id="r_TED_s"></div></div>
+    <div class="res"><div class="nm"><i class="dot" style="background:var(--asi)"></i>ASI <button type="button" class="info" data-t="ASI" aria-label="What is ASI?">i</button></div><div class="big" id="r_ASI_50"></div><div class="sm" id="r_ASI_s"></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sechead">
+      <h2>The forecast: chance each milestone has been reached</h2>
+      <p class="sub">The dots mark the dates with a 30% and a 50% chance. The biggest lever is how likely you think a software-only explosion is.</p>
     </div>
-
-    <div class="main">
-      <div>
-        <h2>The forecast these settings give</h2>
-        <div class="tablebox">
-          <table>
-            <thead><tr><th>Milestone</th><th>30% chance by</th><th>50% chance by</th><th>By end of 2027</th><th>By end of 2028</th></tr></thead>
-            <tbody id="tbody"></tbody>
-          </table>
+    <div class="pair">
+      <div class="plot" id="pProb"><svg id="cProb" role="img" aria-label="Chance each milestone has been reached, by date"></svg><div class="tip" id="tip" hidden></div></div>
+      <div class="ctls">
+        <div class="grp">
+          <h3>How likely is each regime</h3>
+          <div class="split" id="split"><div class="e"></div><div class="b"></div><div class="o"></div></div>
+          <div class="splitkey"><span>Explosion</span><span>Compute-bounded</span><span>One-off</span></div>
+          <div class="ctl"><label for="wExp"><i class="sw"></i>Software-only explosion</label><output id="o_wExp"></output><input type="range" id="wExp" min="0" max="100" step="1"></div>
+          <div class="ctl"><label for="wOne"><i class="sw one"></i>One-off step</label><output id="o_wOne"></output><input type="range" id="wOne" min="0" max="100" step="1"></div>
+          <p class="hint">Compute-bounded gets the rest: <b id="o_wBnd"></b></p>
+        </div>
+        <div class="grp">
+          <h3>Uncertainty within a regime</h3>
+          <div class="ctl"><label for="sig">Spread around each median date</label><output id="o_sig"></output><input type="range" id="sig" min="0.1" max="1" step="0.05"></div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="chart">
-        <h2>Chance each milestone has been reached</h2>
-        <p>The three regimes blended by their probabilities. The dashed line marks 30%.</p>
-        <svg id="cProb" viewBox="0 0 760 330" role="img" aria-label="Probability each milestone has been reached by date"></svg>
-        <div class="legend"><span><i style="border-color:var(--teal)"></i>SAR <button type="button" class="tip" data-t="SAR" aria-label="What is SAR?">i</button></span><span><i style="border-color:var(--orange)"></i>TED-AI <button type="button" class="tip" data-t="TED" aria-label="What is TED-AI?">i</button></span><span><i style="border-color:var(--ink)"></i>ASI <button type="button" class="tip" data-t="ASI" aria-label="What is ASI?">i</button></span></div>
-      </div>
-
-      <div class="chart">
-        <h2>When each regime reaches each milestone</h2>
-        <p>Each curve is the median path for one regime. A dot marks where the path crosses a milestone. Hover over a dot for the date.</p>
-        <svg id="cCap" viewBox="0 0 760 360" role="img" aria-label="Capability over time in each regime, with milestone levels"></svg>
-        <div class="legend"><span><i></i>Explosion</span><span><i style="border-top-style:dashed;border-color:var(--ink2)"></i>Compute-bounded</span><span><i style="border-top-style:dotted;border-color:var(--mute)"></i>One-off step</span></div>
-      </div>
-
-      <div class="chart">
-        <h2>How fast progress runs in each regime</h2>
-        <p>The pace of AI progress as a multiple of the 2024 pace, on a log scale.</p>
-        <svg id="cRate" viewBox="0 0 760 300" role="img" aria-label="Rate of AI progress over time in each regime"></svg>
-        <div class="legend"><span><i></i>Explosion</span><span><i style="border-top-style:dashed;border-color:var(--ink2)"></i>Compute-bounded</span><span><i style="border-top-style:dotted;border-color:var(--mute)"></i>One-off step</span></div>
-      </div>
-
-      <div class="note">
-        <p><b>How the model works.</b> Each regime has a curve for the pace of progress. Adding up the pace over time gives capability. A regime reaches a milestone when capability crosses the milestone's height. The model then spreads uncertainty around each crossing date and blends the three regimes by their probabilities.</p>
-        <p>Every starting value is a judgement call. None is fitted to data.</p>
-        <p>Milestone names and definitions are borrowed from the <a href="https://www.aifuturesmodel.com/">AI Futures Project</a>. Hover over or tap an <span class="tip-inline">i</span> for a definition.</p>
+  <div class="sec">
+    <div class="sechead">
+      <div class="step">HOW THE FORECAST IS BUILT · STEP 1</div>
+      <h2>Each regime sets a pace for AI progress</h2>
+      <p class="sub">Pace as a multiple of the 2024 rate. All three regimes start from today's measured speed-up and then diverge.</p>
+    </div>
+    <div class="pair">
+      <div class="plot"><svg id="cRate" role="img" aria-label="Pace of AI progress over time in each regime"></svg></div>
+      <div class="ctls">
+        <div class="grp"><h3>Today</h3>
+          <div class="ctl"><label for="r0">Pace now</label><output id="o_r0"></output><input type="range" id="r0" min="1" max="3" step="0.05"></div></div>
+        <div class="grp"><h3>Explosion</h3>
+          <div class="ctl"><label for="T"><i class="sw"></i>Years until progress runs away</label><output id="o_T"></output><input type="range" id="T" min="0.6" max="4" step="0.05"></div></div>
+        <div class="grp"><h3>Compute-bounded</h3>
+          <div class="ctl"><label for="cap"><i class="sw bnd"></i>Pace it levels off at</label><output id="o_cap"></output><input type="range" id="cap" min="1.5" max="10" step="0.1"></div>
+          <div class="ctl"><label for="k"><i class="sw bnd"></i>How quickly it gets there</label><output id="o_k"></output><input type="range" id="k" min="0.3" max="2" step="0.05"></div></div>
+        <div class="grp"><h3>One-off step</h3>
+          <div class="ctl"><label for="s"><i class="sw one"></i>Pace it settles back to</label><output id="o_s"></output><input type="range" id="s" min="1" max="2" step="0.05"></div></div>
       </div>
     </div>
+  </div>
+
+  <div class="sec">
+    <div class="sechead">
+      <div class="step">STEP 2</div>
+      <h2>Pace adds up to capability, and each milestone sits at a height</h2>
+      <p class="sub">Capability is the pace added up over time. A regime reaches a milestone where its curve crosses that milestone's line. Each dot is the median date.</p>
+    </div>
+    <div class="pair">
+      <div class="plot"><svg id="cCap" role="img" aria-label="Capability over time in each regime, with milestone heights"></svg></div>
+      <div class="ctls">
+        <div class="grp"><h3>How far away each milestone is</h3>
+          <p class="hint">In years of 2024-pace progress beyond today.</p>
+          <div class="ctl"><label for="hAC"><i class="dot" style="background:var(--mute)"></i>AC: automated coder <button type="button" class="info" data-t="AC" aria-label="What is AC?">i</button></label><output id="o_hAC"></output><input type="range" id="hAC" min="0.3" max="4" step="0.1"></div>
+          <div class="ctl sar"><label for="hSAR"><i class="dot" style="background:var(--sar)"></i>SAR, if there is an explosion <button type="button" class="info" data-t="SAR" aria-label="What is SAR?">i</button></label><output id="o_hSAR"></output><input type="range" id="hSAR" min="1" max="10" step="0.1"></div>
+          <div class="ctl sar"><label for="hSARs"><i class="dot" style="background:var(--sar)"></i>SAR, if there is not <button type="button" class="info" data-t="SAR" aria-label="What is SAR?">i</button></label><output id="o_hSARs"></output><input type="range" id="hSARs" min="1" max="15" step="0.1"></div>
+          <div class="ctl ted"><label for="hTED"><i class="dot" style="background:var(--ted)"></i>TED-AI: beats top experts <button type="button" class="info" data-t="TED" aria-label="What is TED-AI?">i</button></label><output id="o_hTED"></output><input type="range" id="hTED" min="3" max="25" step="0.5"></div>
+          <div class="ctl asi"><label for="hASI"><i class="dot" style="background:var(--asi)"></i>ASI: superintelligence <button type="button" class="info" data-t="ASI" aria-label="What is ASI?">i</button></label><output id="o_hASI"></output><input type="range" id="hASI" min="4" max="40" step="0.5"></div>
+        </div>
+        <p class="hint">SAR has two heights. If there is no explosion, the likeliest reason is that research taste proved hard to automate, so a superhuman researcher needs more progress.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <p><b>Step 3 is the forecast at the top.</b> The model spreads uncertainty around each median date from step 2, then blends the three regimes by how likely each is.</p>
+    <p>SAR is a superhuman AI researcher. TED-AI is AI at least as good as top human experts at virtually all cognitive tasks. ASI is superintelligence. The milestone names and definitions are borrowed from the <a href="https://www.aifuturesmodel.com/">AI Futures Project</a>. Hover over or tap an <span class="info-inline">i</span> for a definition.</p>
+    <p>Every starting value is a judgement call. None is fitted to data.</p>
   </div>
 </div>
 
 <script>
 (function(){
-  var T0=2026.87, FADE=0.8;
-  var DEF={wExp:45,wOne:15,r0:1.9,T:1.3,cap:3.5,k:0.8,s:1.2,hAC:1.2,hSAR:3,hTED:9.5,hASI:13,sig:0.45};
-  var FMT={wExp:function(v){return v+"%"},wOne:function(v){return v+"%"},r0:function(v){return v.toFixed(2)+"x"},T:function(v){return v.toFixed(2)},cap:function(v){return v.toFixed(1)+"x"},k:function(v){return v.toFixed(2)},s:function(v){return v.toFixed(2)+"x"},hAC:function(v){return v.toFixed(1)},hSAR:function(v){return v.toFixed(1)},hTED:function(v){return v.toFixed(1)},hASI:function(v){return v.toFixed(1)},sig:function(v){return v.toFixed(2)}};
+  var T0=2026.87, FADE=0.8, NS="http://www.w3.org/2000/svg";
+  var DEF={wExp:45,wOne:15,r0:1.9,T:1.3,cap:3.5,k:0.8,s:1.2,hAC:1.2,hSAR:3,hSARs:7,hTED:9.5,hASI:13,sig:0.45};
+  var pc=function(v){return v+"%"},x2=function(v){return v.toFixed(2)+"x"},f1=function(v){return v.toFixed(1)},f2=function(v){return v.toFixed(2)};
+  var FMT={wExp:pc,wOne:pc,r0:x2,T:function(v){return f2(v)+" yrs"},cap:function(v){return f1(v)+"x"},k:f2,s:x2,hAC:f1,hSAR:f1,hSARs:f1,hTED:f1,hASI:f1,sig:f2};
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  var C={teal:"#2ebdd1",orange:"#fa6900",ink:"#2a2e30",ink2:"#484e51",mute:"#8e9092",line:"#dddddd",bg:"#ffffff"};
+  var C={sar:"#2a78d6",ted:"#d9730d",asi:"#7a3fc0",ink:"#22272b",ink2:"#4a5157",mute:"#878d92",line:"#e3e5e7",rule:"#c9cdd0",bg:"#ffffff"};
+  var MS=[["SAR","SAR",C.sar],["TED","TED-AI",C.ted],["ASI","ASI",C.asi]];
+  var REG={exp:{name:"Explosion",stroke:C.ink,w:2.6,dash:""},bnd:{name:"Compute-bounded",stroke:C.ink2,w:2.2,dash:"8 5"},one:{name:"One-off step",stroke:C.mute,w:2.2,dash:"2 4"}};
+  var FONT="Inter,system-ui,sans-serif";
   var $=function(id){return document.getElementById(id)};
+
+  // Milestone definitions, borrowed from the AI Futures Project (aifuturesmodel.com, ai-2027.com).
   var DEFS={
     AC:"Automated Coder. An AI that can fully automate an AI company's coding work, replacing its entire software engineering staff.",
     SAR:"Superhuman AI Researcher. An AI that can fully automate AI research: it does the job of the best human AI researcher, but faster and cheaply enough to run lots of copies.",
     TED:"Top-Expert-Dominating AI. An AI that is at least as good as top human experts at virtually all cognitive tasks.",
     ASI:"Artificial Superintelligence. The gap between an ASI and the best humans is twice the gap between the best humans and the median professional, at virtually all cognitive tasks."
   };
-  var tipBox=document.createElement("div");tipBox.id="tipbox";tipBox.setAttribute("role","tooltip");tipBox.hidden=true;document.body.appendChild(tipBox);
-  var tipOwner=null;
-  function showTip(b){var d=DEFS[b.getAttribute("data-t")];if(!d)return;tipOwner=b;tipBox.textContent=d;tipBox.hidden=false;
-    var r=b.getBoundingClientRect(),w=tipBox.offsetWidth,h=tipBox.offsetHeight,vw=document.documentElement.clientWidth;
+  var infoBox=document.createElement("div");infoBox.id="infobox";infoBox.setAttribute("role","tooltip");infoBox.hidden=true;document.body.appendChild(infoBox);
+  var infoOwner=null;
+  function showInfo(b){var d=DEFS[b.getAttribute("data-t")];if(!d)return;infoOwner=b;infoBox.textContent=d;infoBox.hidden=false;
+    var r=b.getBoundingClientRect(),w=infoBox.offsetWidth,h=infoBox.offsetHeight,vw=document.documentElement.clientWidth;
     var left=Math.min(Math.max(8,r.left+r.width/2-w/2),vw-w-8),top=r.top-h-8;if(top<8)top=r.bottom+8;
-    tipBox.style.left=(left+window.scrollX)+"px";tipBox.style.top=(top+window.scrollY)+"px";b.setAttribute("aria-describedby","tipbox")}
-  function hideTip(){tipBox.hidden=true;if(tipOwner)tipOwner.removeAttribute("aria-describedby");tipOwner=null}
-  function tipOf(e){return e.target&&e.target.closest?e.target.closest(".tip"):null}
-  document.addEventListener("mouseover",function(e){var b=tipOf(e);if(b)showTip(b)});
-  document.addEventListener("mouseout",function(e){var b=tipOf(e);if(b&&b===tipOwner&&!b.contains(e.relatedTarget))hideTip()});
-  document.addEventListener("focusin",function(e){var b=tipOf(e);if(b)showTip(b)});
-  document.addEventListener("focusout",function(e){if(tipOf(e))hideTip()});
-  document.addEventListener("click",function(e){var b=tipOf(e);if(b){e.preventDefault();showTip(b)}else hideTip()});
-  document.addEventListener("keydown",function(e){if(e.key==="Escape")hideTip()});
-  window.addEventListener("scroll",hideTip,{passive:true});
-  function get(){var p={};for(var k in DEF){p[k]=parseFloat($(k).value)}return p}
-  function set(p){for(var k in DEF){$(k).value=p[k]}}
+    infoBox.style.left=(left+window.scrollX)+"px";infoBox.style.top=(top+window.scrollY)+"px";b.setAttribute("aria-describedby","infobox")}
+  function hideInfo(){infoBox.hidden=true;if(infoOwner)infoOwner.removeAttribute("aria-describedby");infoOwner=null}
+  function infoOf(e){return e.target&&e.target.closest?e.target.closest(".info"):null}
+  document.addEventListener("mouseover",function(e){var b=infoOf(e);if(b)showInfo(b)});
+  document.addEventListener("mouseout",function(e){var b=infoOf(e);if(b&&b===infoOwner&&!b.contains(e.relatedTarget))hideInfo()});
+  document.addEventListener("focusin",function(e){var b=infoOf(e);if(b)showInfo(b)});
+  document.addEventListener("focusout",function(e){if(infoOf(e))hideInfo()});
+  document.addEventListener("click",function(e){var b=infoOf(e);if(b){e.preventDefault();showInfo(b)}else hideInfo()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")hideInfo()});
+  window.addEventListener("scroll",hideInfo,{passive:true});
+
+  function get(){var p={};for(var k in DEF)p[k]=parseFloat($(k).value);return p}
+  function set(p){for(var k in DEF)$(k).value=p[k]}
   function dateLabel(d){if(!isFinite(d)||d>2100)return "after 2100";var y=Math.floor(d),m=Math.min(11,Math.floor((d-y)*12));return MON[m]+" "+y}
   function erf(x){var s=x<0?-1:1;x=Math.abs(x);var t=1/(1+0.3275911*x);var y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y}
   function Phi(z){return 0.5*(1+erf(z/Math.SQRT2))}
@@ -193,94 +223,108 @@ svg{width:100%;height:auto;display:block;max-width:100%}
            cross:function(L){var lo=0,hi=400;for(var i=0;i<80;i++){var m=(lo+hi)/2;if(R.one.cap(m)<L)lo=m;else hi=m}return hi}}
     };
     var wE=p.wExp/100,wO=p.wOne/100,wB=Math.max(0,1-wE-wO);
-    var W={exp:wE,bnd:wB,one:wO};
-    var H={AC:p.hAC,SAR:p.hSAR,TED:p.hTED,ASI:p.hASI};
-    function prob(m,t){var u=t-T0;if(u<=0)return 0;var s=0;for(var k in R){var d=R[k].cross(H[m]);s+=W[k]*Phi(Math.log(u/d)/p.sig)}return s}
+    var W={exp:wE,bnd:wB,one:wO},H={AC:p.hAC,SAR:p.hSAR,TED:p.hTED,ASI:p.hASI};
+    function hgt(m,k){return (m==="SAR"&&k!=="exp")?p.hSARs:H[m]}
+    function prob(m,t){var u=t-T0;if(u<=0)return 0;var s=0;for(var k in R){var d=R[k].cross(hgt(m,k));s+=W[k]*Phi(Math.log(u/d)/p.sig)}return s}
     function pct(m,q){var lo=T0,hi=T0+200;if(prob(m,hi)<q)return Infinity;for(var i=0;i<70;i++){var mid=(lo+hi)/2;if(prob(m,mid)<q)lo=mid;else hi=mid}return hi}
-    return {R:R,W:W,H:H,prob:prob,pct:pct};
+    return {R:R,W:W,H:H,hgt:hgt,slow:p.hSARs,prob:prob,pct:pct};
   }
 
-  function svgEl(svg,tag,attrs,text){var e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;svg.appendChild(e);return e}
-  function clear(svg){while(svg.firstChild)svg.removeChild(svg.firstChild)}
-  function pathFrom(pts){var d="",pen=false;for(var i=0;i<pts.length;i++){var q=pts[i];if(q==null){pen=false;continue}d+=(pen?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1);pen=true}return d}
-  var STY={exp:{stroke:C.ink,w:2.6,dash:""},bnd:{stroke:C.ink2,w:2.4,dash:"9 5"},one:{stroke:C.mute,w:2.4,dash:"3 4"}};
+  function el(parent,tag,attrs,text){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;parent.appendChild(e);return e}
+  function txt(svg,x,y,s,o){o=o||{};return el(svg,"text",{x:x,y:y,"text-anchor":o.a||"start","font-size":o.size||12,fill:o.fill||C.ink2,"font-weight":o.w||400,"font-family":FONT,"paint-order":"stroke",stroke:o.halo===false?"none":C.bg,"stroke-width":o.halo===false?0:3,"stroke-linejoin":"round"},s)}
+  function path(pts){var d="";for(var i=0;i<pts.length;i++)d+=(i?"L":"M")+pts[i][0].toFixed(1)+" "+pts[i][1].toFixed(1);return d}
+  function setup(id,ratio,minH){var svg=$(id);while(svg.firstChild)svg.removeChild(svg.firstChild);var W=Math.max(300,Math.round(svg.parentNode.clientWidth)),H=Math.max(minH,Math.round(W*ratio));svg.setAttribute("viewBox","0 0 "+W+" "+H);el(svg,"rect",{x:0,y:0,width:W,height:H,fill:C.bg});return {svg:svg,W:W,H:H}}
+  // Year labels along the bottom, plus a vertical gridline at every year so the chart reads as a grid.
+  function yearTicks(svg,X,y0,y1,base,narrow,top){for(var y=y0;y<=y1;y++){el(svg,"line",{x1:X(y),x2:X(y),y1:top,y2:base,stroke:C.line,"stroke-width":1});if(narrow&&(y-y0)%2)continue;txt(svg,X(y),base+17,String(y),{a:"middle",halo:false})}}
+  function todayLine(svg,X,top,bot){el(svg,"line",{x1:X(T0),x2:X(T0),y1:top,y2:bot,stroke:C.mute,"stroke-width":1,"stroke-dasharray":"3 3"});txt(svg,X(T0)+5,top+10,"today",{size:11.5,fill:C.mute})}
+  function spread(items,minGap,lo,hi){items.sort(function(a,b){return a.y-b.y});for(var i=1;i<items.length;i++)if(items[i].y-items[i-1].y<minGap)items[i].y=items[i-1].y+minGap;var over=items.length?items[items.length-1].y-hi:0;if(over>0)for(var j=items.length-1;j>=0;j--){items[j].y=Math.min(items[j].y,hi-(items.length-1-j)*minGap)}return items}
 
-  function frame(svg,o){ // o: W,H,ml,mr,mt,mb,x0,x1,xticks[{v,l}],yticks[{y,l}]
-    clear(svg);
-    var X=function(v){return o.ml+(v-o.x0)/(o.x1-o.x0)*(o.W-o.ml-o.mr)};
-    svgEl(svg,"rect",{x:0,y:0,width:o.W,height:o.H,fill:C.bg});
-    o.yticks.forEach(function(t){svgEl(svg,"line",{x1:o.ml,x2:o.W-o.mr,y1:t.y,y2:t.y,stroke:C.line,"stroke-width":1});svgEl(svg,"text",{x:o.ml-8,y:t.y+4,"text-anchor":"end","font-size":12,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},t.l)});
-    o.xticks.forEach(function(t){var x=X(t.v);if(x>=o.ml-0.5&&x<=o.W-o.mr+0.5)svgEl(svg,"line",{x1:x,x2:x,y1:o.mt,y2:o.H-o.mb,stroke:C.line,"stroke-width":1})});
-    o.xticks.forEach(function(t){svgEl(svg,"text",{x:X(t.v),y:o.H-o.mb+18,"text-anchor":"middle","font-size":12,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},t.l)});
-    return X;
-  }
-
+  var probGeom=null;
   function drawProb(M){
-    var svg=$("cProb"),o={W:760,H:330,ml:46,mr:16,mt:12,mb:30,x0:2027,x1:2036};
-    var Y=function(v){return o.mt+(1-v)*(o.H-o.mt-o.mb)};
-    o.yticks=[0,0.25,0.5,0.75,1].map(function(v){return {y:Y(v),l:Math.round(v*100)+"%"}});
-    o.xticks=[];for(var y=2027;y<=2036;y++)o.xticks.push({v:y,l:"'"+String(y-1).slice(2)});
-    var X=frame(svg,o);
-    svgEl(svg,"text",{x:o.W-o.mr,y:o.H-2,"text-anchor":"end","font-size":11,fill:C.mute,"font-family":"Inter,system-ui,sans-serif"},"tick labels mark the end of each year");
-    svgEl(svg,"line",{x1:o.ml,x2:o.W-o.mr,y1:Y(0.3),y2:Y(0.3),stroke:C.ink2,"stroke-width":1.2,"stroke-dasharray":"5 4"});
-    svgEl(svg,"text",{x:o.W-o.mr-4,y:Y(0.3)-6,"text-anchor":"end","font-size":12,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},"30%");
-    [["SAR",C.teal],["TED",C.orange],["ASI",C.ink]].forEach(function(mc){
-      var pts=[];for(var i=0;i<=180;i++){var t=o.x0-0.13+i*(o.x1-o.x0+0.13)/180;if(t<o.x0)continue;pts.push([X(t),Y(M.prob(mc[0],t))])}
-      pts.unshift([X(o.x0),Y(M.prob(mc[0],o.x0))]);
-      svgEl(svg,"path",{d:pathFrom(pts),fill:"none",stroke:mc[1],"stroke-width":2.8,"stroke-linejoin":"round","stroke-linecap":"round"});
+    var c=setup("cProb",0.5,280),svg=c.svg,ml=40,mr=62,mt=12,mb=26,x0=T0,x1=2036;
+    var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){return mt+(1-v)*(c.H-mt-mb)};
+    yearTicks(svg,X,2027,2036,c.H-mb,c.W<520,mt);
+    [0,0.3,0.5,0.75,1].forEach(function(v){var key=(v===0.3||v===0.5);el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:key?C.rule:C.line,"stroke-width":1,"stroke-dasharray":key?"4 3":""});txt(svg,ml-7,Y(v)+4,Math.round(v*100)+"%",{a:"end",halo:false,w:key?600:400,fill:key?C.ink:C.ink2})});
+    var labels=[];
+    MS.forEach(function(m){
+      var pts=[];for(var i=0;i<=220;i++){var t=x0+i*(x1-x0)/220;pts.push([X(t),Y(M.prob(m[0],t))])}
+      el(svg,"path",{d:path(pts),fill:"none",stroke:m[2],"stroke-width":2.4,"stroke-linejoin":"round","stroke-linecap":"round"});
+      [0.3,0.5].forEach(function(q){var d=M.pct(m[0],q);if(d<=x1)el(svg,"circle",{cx:X(d),cy:Y(q),r:4.5,fill:m[2],stroke:C.bg,"stroke-width":2})});
+      labels.push({y:Y(M.prob(m[0],x1)),s:m[1],c:m[2],k:m[0]});
     });
+    spread(labels,15,mt+8,c.H-mb).forEach(function(l){el(svg,"circle",{cx:c.W-mr+9,cy:l.y,r:4,fill:l.c});var t=txt(svg,c.W-mr+17,l.y+4,l.s,{fill:C.ink,w:600,halo:false});el(t,"title",{},l.s+": "+DEFS[l.k])});
+    var g=el(svg,"g",{id:"hover",visibility:"hidden"});el(g,"line",{id:"hl",y1:mt,y2:c.H-mb,stroke:C.ink2,"stroke-width":1});
+    MS.forEach(function(m){el(g,"circle",{id:"hd_"+m[0],r:4.5,fill:m[2],stroke:C.bg,"stroke-width":2})});
+    probGeom={X:X,Y:Y,x0:x0,x1:x1,ml:ml,mr:mr,W:c.W,M:M};
+  }
+  function hover(ev){
+    var g=probGeom;if(!g)return;var svg=$("cProb"),r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)*g.W/r.width;
+    var t=g.x0+(px-g.ml)/(g.W-g.ml-g.mr)*(g.x1-g.x0),tip=$("tip");
+    if(t<g.x0||t>g.x1){unhover();return}
+    $("hover").setAttribute("visibility","visible");$("hl").setAttribute("x1",g.X(t));$("hl").setAttribute("x2",g.X(t));
+    var h="<b>"+dateLabel(t)+"</b>";
+    MS.forEach(function(m){var v=g.M.prob(m[0],t);var d=$("hd_"+m[0]);d.setAttribute("cx",g.X(t));d.setAttribute("cy",g.Y(v));h+="<span><i class=\"dot\" style=\"background:"+m[2]+"\"></i>"+m[1]+" "+Math.round(v*100)+"%</span>"});
+    tip.innerHTML=h;tip.hidden=false;var sx=g.X(t)*r.width/g.W,w=tip.offsetWidth;tip.style.left=Math.max(0,Math.min(r.width-w,sx<r.width/2?sx+12:sx-w-12))+"px";
+  }
+  function unhover(){var h=$("hover");if(h)h.setAttribute("visibility","hidden");$("tip").hidden=true}
+
+  function drawRate(M){
+    var c=setup("cRate",0.42,250),svg=c.svg,ml=40,mr=14,mt=12,mb=26,x0=T0-0.15,x1=2031,lo=Math.log(0.8),hi=Math.log(100);
+    var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){var q=Math.min(Math.max(v,0.8),100);return mt+(1-(Math.log(q)-lo)/(hi-lo))*(c.H-mt-mb)};
+    yearTicks(svg,X,2027,2031,c.H-mb,false,mt);
+    [1,2,5,10,20,50,100].forEach(function(v){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:C.line,"stroke-width":1});txt(svg,ml-7,Y(v)+4,v+"x",{a:"end",halo:false})});
+    todayLine(svg,X,mt,c.H-mb);
+    var ends={};
+    ["one","bnd","exp"].forEach(function(k){var pts=[],last;for(var i=0;i<=400;i++){var u=i*(x1-T0)/400,r=M.R[k].rate(u);if(!isFinite(r)||r>100){pts.push([X(T0+u),Y(100)]);break}pts.push([X(T0+u),Y(r)])}
+      last=pts[pts.length-1];ends[k]=last;el(svg,"path",{d:path(pts),fill:"none",stroke:REG[k].stroke,"stroke-width":REG[k].w,"stroke-dasharray":REG[k].dash,"stroke-linejoin":"round"})});
+    txt(svg,Math.min(ends.exp[0]+8,c.W-mr-70),mt+26,"Explosion",{fill:C.ink,w:600});
+    var lb=[{y:ends.bnd[1]-8,s:"Compute-bounded"},{y:ends.one[1]-8,s:"One-off step"}];if(Math.abs(lb[0].y-lb[1].y)<15){lb[0].y=Math.min(lb[0].y,lb[1].y)-8;lb[1].y=lb[0].y+30}
+    lb.forEach(function(l){txt(svg,c.W-mr-2,l.y,l.s,{a:"end",fill:C.ink,w:600})});
   }
 
   function drawCap(M){
-    var svg=$("cCap"),o={W:760,H:360,ml:46,mr:16,mt:14,mb:30,x0:2026.6,x1:2035};
-    var ymax=Math.max(4,M.H.ASI*1.15);
-    var Y=function(v){return o.mt+(1-Math.min(v,ymax)/ymax)*(o.H-o.mt-o.mb)};
-    var step=ymax>24?8:ymax>12?4:ymax>6?2:1;o.yticks=[];for(var v=0;v<=ymax;v+=step)o.yticks.push({y:Y(v),l:String(v)});
-    o.xticks=[];for(var y=2027;y<=2035;y++)o.xticks.push({v:y,l:String(y)});
-    var X=frame(svg,o);
-    svgEl(svg,"line",{x1:X(T0),x2:X(T0),y1:o.mt,y2:o.H-o.mb,stroke:C.ink2,"stroke-width":1,"stroke-dasharray":"3 3"});
-    svgEl(svg,"text",{x:X(T0)+5,y:o.mt+11,"font-size":11.5,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},"today");
-    var LV=[["AC",C.mute,"AC"],["SAR",C.teal,"SAR"],["TED",C.orange,"TED-AI"],["ASI",C.ink,"ASI"]];
-    LV.forEach(function(l){var yy=Y(M.H[l[0]]);svgEl(svg,"line",{x1:o.ml,x2:o.W-o.mr,y1:yy,y2:yy,stroke:l[1],"stroke-width":1.8});
-      var lt=svgEl(svg,"text",{x:o.W-o.mr-4,y:yy-5,"text-anchor":"end","font-size":12,fill:C.ink,"font-weight":600,"font-family":"Inter,system-ui,sans-serif"},l[2]);svgEl(lt,"title",{},l[2]+": "+DEFS[l[0]])});
-    ["one","bnd","exp"].forEach(function(k){var pts=[];for(var i=0;i<=400;i++){var u=i*(o.x1-T0)/400;var c=M.R[k].cap(u);if(!isFinite(c)||c>ymax){pts.push([X(T0+u),Y(ymax)]);break}pts.push([X(T0+u),Y(c)])}
-      svgEl(svg,"path",{d:pathFrom(pts),fill:"none",stroke:STY[k].stroke,"stroke-width":STY[k].w,"stroke-dasharray":STY[k].dash,"stroke-linejoin":"round"})});
-    var NAME={exp:"Explosion",bnd:"Compute-bounded",one:"One-off step"};
-    LV.forEach(function(l){["exp","bnd","one"].forEach(function(k){var d=T0+M.R[k].cross(M.H[l[0]]);if(!(d<=o.x1))return;
-      var c=svgEl(svg,"circle",{cx:X(d),cy:Y(M.H[l[0]]),r:5.5,fill:l[1],stroke:C.bg,"stroke-width":1.6});svgEl(c,"title",{},NAME[k]+" reaches "+l[2]+": "+dateLabel(d))})});
-    svgEl(svg,"text",{x:12,y:o.mt+4,"font-size":11,fill:C.mute,transform:"rotate(-90 12 "+(o.mt+4)+")","text-anchor":"end","font-family":"Inter,system-ui,sans-serif"},"years of 2024-pace progress beyond today");
+    var c=setup("cCap",0.56,330),svg=c.svg,ml=34,mr=14,mt=14,mb=26,x0=T0-0.2,x1=2035,narrow=c.W<520;
+    var ymax=Math.max(4,Math.max(M.H.ASI,M.slow)*1.15);
+    var X=function(v){return ml+(v-x0)/(x1-x0)*(c.W-ml-mr)},Y=function(v){return mt+(1-Math.min(v,ymax)/ymax)*(c.H-mt-mb)};
+    yearTicks(svg,X,2027,2035,c.H-mb,narrow,mt);
+    var step=ymax>24?8:ymax>12?4:ymax>6?2:1;for(var v=0;v<=ymax;v+=step){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(v),y2:Y(v),stroke:C.line,"stroke-width":1});txt(svg,ml-7,Y(v)+4,String(v),{a:"end",halo:false})}
+    todayLine(svg,X,mt,c.H-mb);
+    var LV=[["AC",C.mute,"AC",M.H.AC,""],["SAR",C.sar,narrow?"SAR":"SAR, with an explosion",M.H.SAR,""],["SAR",C.sar,narrow?"SAR, no explosion":"SAR, without an explosion",M.slow,"6 4"],["TED",C.ted,"TED-AI",M.H.TED,""],["ASI",C.asi,"ASI",M.H.ASI,""]];
+    LV.forEach(function(l){el(svg,"line",{x1:ml,x2:c.W-mr,y1:Y(l[3]),y2:Y(l[3]),stroke:l[1],"stroke-width":1.6,"stroke-dasharray":l[4]})});
+    var endPt={};
+    ["one","bnd","exp"].forEach(function(k){var pts=[];for(var i=0;i<=500;i++){var u=i*(x1-T0)/500,q=M.R[k].cap(u);if(!isFinite(q)||q>ymax){pts.push([X(T0+u),Y(ymax)]);break}pts.push([X(T0+u),Y(q)])}
+      endPt[k]=pts[pts.length-1];el(svg,"path",{d:path(pts),fill:"none",stroke:REG[k].stroke,"stroke-width":REG[k].w,"stroke-dasharray":REG[k].dash,"stroke-linejoin":"round"})});
+    LV.forEach(function(l){var t=txt(svg,c.W-mr-3,Y(l[3])-5,l[2],{a:"end",fill:C.ink,w:600});el(t,"title",{},DEFS[l[0]])});
+    [["AC",C.mute],["SAR",C.sar],["TED",C.ted],["ASI",C.asi]].forEach(function(m){["exp","bnd","one"].forEach(function(k){
+      var hh=M.hgt(m[0],k),d=T0+M.R[k].cross(hh);if(!(d<=x1))return;
+      el(svg,"circle",{cx:X(d),cy:Y(hh),r:5,fill:m[1],stroke:C.bg,"stroke-width":2});
+      if(m[0]==="AC")return;
+      if(narrow)return;
+      if(k==="exp")txt(svg,X(d)-9,Y(hh)-7,dateLabel(d),{a:"end",size:11.5,fill:C.ink});else if(X(d)>c.W-mr-70)txt(svg,X(d)-8,Y(hh)+16,dateLabel(d),{a:"end",size:11.5,fill:C.ink});else txt(svg,X(d)+8,Y(hh)+15,dateLabel(d),{size:11.5,fill:C.ink})})});
+    if(!narrow){txt(svg,endPt.exp[0]+8,mt+12,"Explosion",{fill:C.ink,w:600});
+      var bx=endPt.bnd,ox=endPt.one;txt(svg,Math.min(bx[0]+8,c.W-mr-110),Math.max(bx[1]+12,mt+12),"Compute-bounded",{fill:C.ink,w:600,a:bx[0]>c.W-mr-120?"end":"start"});
+      var uo=2030.6-T0,qo=Math.min(M.R.one.cap(uo),ymax);txt(svg,X(T0+uo)+10,Y(qo)+20,"One-off step",{fill:C.ink,w:600})}
+    else{txt(svg,ml+6,mt+12,"solid: explosion · dashed: compute-bounded · dotted: one-off",{size:10.5,fill:C.ink2})}
   }
 
-  function drawRate(M){
-    var svg=$("cRate"),o={W:760,H:300,ml:46,mr:16,mt:12,mb:30,x0:2026.6,x1:2031};
-    var lo=Math.log(0.8),hi=Math.log(100);
-    var Y=function(v){var c=Math.min(Math.max(v,0.8),100);return o.mt+(1-(Math.log(c)-lo)/(hi-lo))*(o.H-o.mt-o.mb)};
-    o.yticks=[1,2,5,10,20,50,100].map(function(v){return {y:Y(v),l:v+"x"}});
-    o.xticks=[];for(var y=2027;y<=2031;y++)o.xticks.push({v:y,l:String(y)});
-    var X=frame(svg,o);
-    svgEl(svg,"line",{x1:X(T0),x2:X(T0),y1:o.mt,y2:o.H-o.mb,stroke:C.ink2,"stroke-width":1,"stroke-dasharray":"3 3"});
-    svgEl(svg,"text",{x:X(T0)+5,y:o.mt+11,"font-size":11.5,fill:C.ink2,"font-family":"Inter,system-ui,sans-serif"},"today");
-    ["one","bnd","exp"].forEach(function(k){var pts=[];for(var i=0;i<=400;i++){var u=i*(o.x1-T0)/400;var r=M.R[k].rate(u);if(!isFinite(r)||r>100){pts.push([X(T0+u),Y(100)]);break}pts.push([X(T0+u),Y(r)])}
-      svgEl(svg,"path",{d:pathFrom(pts),fill:"none",stroke:STY[k].stroke,"stroke-width":STY[k].w,"stroke-dasharray":STY[k].dash,"stroke-linejoin":"round"})});
+  function results(M,p){
+    MS.forEach(function(m){$("r_"+m[0]+"_50").textContent=dateLabel(M.pct(m[0],0.5));$("r_"+m[0]+"_s").textContent=Math.round(M.prob(m[0],2028)*100)+"% by end of 2027 · 30% by "+dateLabel(M.pct(m[0],0.3))});
+    var w=[p.wExp,Math.max(0,100-p.wExp-p.wOne),p.wOne],ch=$("split").children;
+    for(var i=0;i<3;i++){ch[i].style.flex=Math.max(w[i],0.001)+" 0 0";ch[i].textContent=w[i]>=9?w[i]+"%":"";ch[i].style.display=w[i]>0?"flex":"none"}
   }
-
-  function table(M){
-    var rows=[["SAR","SAR",C.teal],["TED","TED-AI",C.orange],["ASI","ASI",C.ink]],h="";
-    rows.forEach(function(r){h+="<tr><td><span class=\"sw\" style=\"background:"+r[2]+"\"></span>"+r[1]+" <button type=\"button\" class=\"tip\" data-t=\""+r[0]+"\" aria-label=\"What is "+r[1]+"?\">i</button></td><td>"+dateLabel(M.pct(r[0],0.3))+"</td><td>"+dateLabel(M.pct(r[0],0.5))+"</td><td>"+Math.round(M.prob(r[0],2028)*100)+"%</td><td>"+Math.round(M.prob(r[0],2029)*100)+"%</td></tr>"});
-    $("tbody").innerHTML=h;
-  }
-
   function render(src){
     var p=get();
     if(p.wExp+p.wOne>100){if(src==="wOne"){p.wExp=100-p.wOne;$("wExp").value=p.wExp}else{p.wOne=100-p.wExp;$("wOne").value=p.wOne}}
     for(var k in DEF)$("o_"+k).textContent=FMT[k](p[k]);
     $("o_wBnd").textContent=Math.max(0,100-p.wExp-p.wOne)+"%";
-    var M=model(p);table(M);drawProb(M);drawCap(M);drawRate(M);
+    var M=model(p);results(M,p);unhover();drawProb(M);drawRate(M);drawCap(M);
   }
   function start(){
     set(DEF);
     for(var k in DEF)(function(id){$(id).addEventListener("input",function(){render(id)})})(k);
     $("reset").addEventListener("click",function(){set(DEF);render()});
+    var pp=$("pProb");pp.addEventListener("pointermove",hover);pp.addEventListener("pointerdown",hover);pp.addEventListener("pointerleave",unhover);
+    var tm;window.addEventListener("resize",function(){clearTimeout(tm);tm=setTimeout(function(){render()},80)});
     render();
   }
   start();
