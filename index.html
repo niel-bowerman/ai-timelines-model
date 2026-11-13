@@ -113,7 +113,7 @@ body{margin:0}
 
 <div class="wrap">
   <div class="head">
-    <div class="toprow"><h1>AI Timelines Model</h1><div class="btns"><label class="pre" for="preset">Assumptions<select id="preset"><option value="default">Niel's inside view (default)</option><option value="atc">Niel's all things considered view</option><option value="aifp">AI Futures Project, roughly</option><option value="paul">Paul Christiano, roughly</option><option value="sentinel">Sentinel, roughly</option><option value="custom">Custom</option></select></label><button id="skip" type="button" class="primary">Skip to forecast</button><button id="reset" type="button">Reset to default settings</button></div></div>
+    <div class="toprow"><h1>AI Timelines Model</h1><div class="btns"><label class="pre" for="preset">Assumptions<select id="preset"><option value="default">Niel's all things considered view (default)</option><option value="inside">Niel's inside view</option><option value="aifp">AI Futures Project, roughly</option><option value="paul">Paul Christiano, roughly</option><option value="sentinel">Sentinel, roughly</option><option value="custom">Custom</option></select></label><button id="skip" type="button" class="primary">Skip to forecast</button><button id="reset" type="button">Reset to default settings</button></div></div>
     <p class="lede">Niel Bowerman and Claude made a model of how AI progress could unfold after the METR report. It starts from what has been measured, sets out three ways progress could go from here, and turns them into a forecast. Move any slider and everything downstream updates.</p>
     <p class="sub">The Assumptions menu loads settings that roughly reproduce other published forecasts. They are our attempts inside this model, not the forecasters' own models.</p>
   </div>
@@ -248,7 +248,7 @@ body{margin:0}
 <script>
 (function(){
   var T0=2026.87, FADE=0.8, NS="http://www.w3.org/2000/svg";
-  var DEF={wExp:45,wOne:15,r0:1.9,T:1.3,cap:3.5,k:0.8,s:1.2,hAC:1.2,hSAR:3,hSARs:7,hTED:9.5,hASI:13,sig:0.45};
+  var DEF={wExp:56,wOne:12,r0:1.9,T:1.15,cap:3.5,k:0.8,s:1.2,hAC:1.2,hSAR:3,hSARs:7,hTED:9.5,hASI:13,sig:0.45};
   var pc=function(v){return v+"%"},x2=function(v){return v.toFixed(2)+"x"},f1=function(v){return v.toFixed(1)},f2=function(v){return v.toFixed(2)};
   var FMT={wExp:pc,wOne:pc,r0:x2,T:function(v){return f2(v)+" yrs"},cap:function(v){return f1(v)+"x"},k:f2,s:x2,hAC:f1,hSAR:f1,hSARs:f1,hTED:f1,hASI:f1,sig:f2};
   var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -468,7 +468,7 @@ body{margin:0}
     set(DEF);
     for(var k in DEF)(function(id){$(id).addEventListener("input",function(){$("preset").value="custom";render(id)})})(k);
     // settings that roughly reproduce other published forecasts inside this model
-    var PRESETS={"default":{},atc:{wExp:56,wOne:12,T:1.15},aifp:{wExp:85,wOne:5,T:1.25},paul:{wExp:67,wOne:8,T:1},sentinel:{wExp:55,wOne:15,T:0.6,sig:0.65}};
+    var PRESETS={"default":{},inside:{wExp:45,wOne:15,T:1.3},aifp:{wExp:85,wOne:5,T:1.25},paul:{wExp:67,wOne:8,T:1},sentinel:{wExp:55,wOne:15,T:0.6,sig:0.65}};
     function applyPreset(name){var v=PRESETS[name];if(!v)return;var q={};for(var k in DEF)q[k]=(k in v)?v[k]:DEF[k];set(q);$("preset").value=name;render()}
     $("preset").addEventListener("change",function(){applyPreset($("preset").value)});
     $("reset").addEventListener("click",function(){$("fitKink").checked=true;applyPreset("default")});$("fitKink").addEventListener("change",function(){render()});$("fitSmooth").addEventListener("change",function(){render()});$("showPub").addEventListener("change",function(){render()});$("skip").addEventListener("click",function(){$("forecast").scrollIntoView({behavior:"smooth",block:"start"})});
