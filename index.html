@@ -479,5 +479,32 @@ body{margin:0}
   start();
 })();
 </script>
+<script>
+(function(){
+  var API="https://abacus.jasoncameron.dev/",NS="niel-ai-timelines-model";
+  var q=location.search,ls=null;
+  try{ls=window.localStorage;ls.getItem("x");}catch(e){ls=null;}
+  function get(k){try{return ls&&ls.getItem(k);}catch(e){return null;}}
+  function set(k){try{if(ls)ls.setItem(k,"1");}catch(e){}}
+  var mine=/[?&](me|stats)\b/.test(q);
+  if(mine)set("atm_me");
+  if(/[?&]stats\b/.test(q)){
+    var box=document.createElement("div");
+    box.style.cssText="position:fixed;right:12px;bottom:12px;z-index:99;background:#111;color:#fff;font:13px/1.5 Inter,system-ui,sans-serif;padding:10px 14px;border-radius:8px";
+    box.textContent="Loading visit counts…";
+    document.body.appendChild(box);
+    Promise.all(["views","visitors"].map(function(k){
+      return fetch(API+"get/"+NS+"/"+k).then(function(r){return r.ok?r.json():{value:0};}).then(function(j){return j.value||0;});
+    })).then(function(v){
+      box.textContent="Visits by other people: "+v[0]+" page views from "+v[1]+" browsers. This browser is not counted.";
+    }).catch(function(){box.textContent="Could not load the visit counts.";});
+    return;
+  }
+  if(mine||get("atm_me")||navigator.webdriver)return;
+  function hit(k){try{fetch(API+"hit/"+NS+"/"+k,{keepalive:true}).catch(function(){});}catch(e){}}
+  hit("views");
+  if(ls&&!get("atm_seen")){set("atm_seen");hit("visitors");}
+})();
+</script>
 </body>
 </html>
