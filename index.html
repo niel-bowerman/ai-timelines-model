@@ -113,7 +113,7 @@ body{margin:0}
 
 <div class="wrap">
   <div class="head">
-    <div class="toprow"><h1>AI Timelines Model</h1><div class="btns"><label class="pre" for="preset">Assumptions<select id="preset"><option value="default">Niel and Claude (default)</option><option value="aifp">AI Futures Project, roughly</option><option value="paul">Paul Christiano, roughly</option><option value="sentinel">Sentinel, roughly</option><option value="custom">Custom</option></select></label><button id="skip" type="button" class="primary">Skip to forecast</button><button id="reset" type="button">Reset to default settings</button></div></div>
+    <div class="toprow"><h1>AI Timelines Model</h1><div class="btns"><label class="pre" for="preset">Assumptions<select id="preset"><option value="default">Niel's inside view (default)</option><option value="atc">Niel's all things considered view</option><option value="aifp">AI Futures Project, roughly</option><option value="paul">Paul Christiano, roughly</option><option value="sentinel">Sentinel, roughly</option><option value="custom">Custom</option></select></label><button id="skip" type="button" class="primary">Skip to forecast</button><button id="reset" type="button">Reset to default settings</button></div></div>
     <p class="lede">Niel Bowerman and Claude made a model of how AI progress could unfold after the METR report. It starts from what has been measured, sets out three ways progress could go from here, and turns them into a forecast. Move any slider and everything downstream updates.</p>
     <p class="sub">The Assumptions menu loads settings that roughly reproduce other published forecasts. They are our attempts inside this model, not the forecasters' own models.</p>
   </div>
@@ -468,7 +468,7 @@ body{margin:0}
     set(DEF);
     for(var k in DEF)(function(id){$(id).addEventListener("input",function(){$("preset").value="custom";render(id)})})(k);
     // settings that roughly reproduce other published forecasts inside this model
-    var PRESETS={"default":{},aifp:{wExp:85,wOne:5,T:1.25},paul:{wExp:67,wOne:8,T:1},sentinel:{wExp:55,wOne:15,T:0.6,sig:0.65}};
+    var PRESETS={"default":{},atc:{wExp:56,wOne:12,T:1.15},aifp:{wExp:85,wOne:5,T:1.25},paul:{wExp:67,wOne:8,T:1},sentinel:{wExp:55,wOne:15,T:0.6,sig:0.65}};
     function applyPreset(name){var v=PRESETS[name];if(!v)return;var q={};for(var k in DEF)q[k]=(k in v)?v[k]:DEF[k];set(q);$("preset").value=name;render()}
     $("preset").addEventListener("change",function(){applyPreset($("preset").value)});
     $("reset").addEventListener("click",function(){$("fitKink").checked=true;applyPreset("default")});$("fitKink").addEventListener("change",function(){render()});$("fitSmooth").addEventListener("change",function(){render()});$("showPub").addEventListener("change",function(){render()});$("skip").addEventListener("click",function(){$("forecast").scrollIntoView({behavior:"smooth",block:"start"})});
