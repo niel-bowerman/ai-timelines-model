@@ -213,10 +213,11 @@ body{margin:0}
     </div>
     <div class="pair">
       <div class="plot" id="pProb"><svg id="cProb" role="img" aria-label="Chance each milestone has been reached, by date"></svg><div class="tip" id="tip_cProb" hidden></div>
-        <div class="pub"><label class="chk"><input type="checkbox" id="showPub" checked> Published forecasts, 7 to 10 November</label>
+        <div class="pub"><label class="chk"><input type="checkbox" id="showPub" checked> Published forecasts, 7 to 13 November</label>
           <span><svg viewBox="-7 -7 14 14"><path d="M0 -6L6 0L0 6L-6 0Z" fill="#878d92"/></svg>AI Futures Project, six authors: median dates, and chance of TED-AI by end of 2027</span>
           <span><svg viewBox="-7 -7 14 14"><path d="M0 -6L6 5L-6 5Z" fill="#878d92"/></svg>Sentinel: ASI, 10% and 50%</span>
           <span><svg viewBox="-7 -7 14 14"><path d="M0 -7L1.9 -2.4L6.7 -2.2L2.9 0.9L4.1 5.7L0 3L-4.1 5.7L-2.9 0.9L-6.7 -2.2L-1.9 -2.4Z" fill="#878d92"/></svg>Paul Christiano: AI able to overthrow governments</span>
+          <span><svg viewBox="-7 -7 14 14"><path d="M-5 -5H5V5H-5Z" fill="#878d92"/></svg>Dwarkesh Patel: median year for SAR, and TED-AI expected by 2030</span>
         </div>
         <div class="tablebox"><table class="blend"><caption>What goes into the blend</caption>
           <thead><tr><th scope="col">Median date</th><th scope="col"><i class="sw"></i>Explosion<b id="w_exp"></b></th><th scope="col"><i class="sw bnd"></i>Compute-bounded<b id="w_bnd"></b></th><th scope="col"><i class="sw one"></i>One-off step<b id="w_one"></b></th><th scope="col">All three blended</th></tr></thead>
@@ -368,7 +369,7 @@ body{margin:0}
     });
     spread(labels,15,mt+8,c.H-mb).forEach(function(l){el(svg,"circle",{cx:c.W-mr+9,cy:l.y,r:4,fill:l.c});var lt=txt(svg,c.W-mr+17,l.y+4,l.s,{fill:C.ink,w:600,halo:false});el(lt,"title",{},l.s+": "+DEFS[l.k])});
     if($("showPub").checked){
-      var mo=function(y,m){return y+(m-0.5)/12},shape={d:"M0 -6L6 0L0 6L-6 0Z",t:"M0 -6.5L6.5 5L-6.5 5Z",s:"M0 -9L2.4 -3.1L8.6 -2.8L3.7 1.2L5.3 7.3L0 3.9L-5.3 7.3L-3.7 1.2L-8.6 -2.8L-2.4 -3.1Z"};
+      var mo=function(y,m){return y+(m-0.5)/12},shape={d:"M0 -6L6 0L0 6L-6 0Z",t:"M0 -6.5L6.5 5L-6.5 5Z",s:"M0 -9L2.4 -3.1L8.6 -2.8L3.7 1.2L5.3 7.3L0 3.9L-5.3 7.3L-3.7 1.2L-8.6 -2.8L-2.4 -3.1Z",q:"M-5 -5H5V5H-5Z"};
       var mark=function(t,v,col,sh,title){if(t>x1)return;var e=el(svg,"path",{d:shape[sh],transform:"translate("+X(t).toFixed(1)+" "+Y(v).toFixed(1)+")",fill:col,stroke:C.bg,"stroke-width":1.5});el(e,"title",{},title)};
       var who=["Daniel","Eli","Romeo","Brendan","Lukas","Thomas"];
       [mo(2027,5),mo(2027,8),mo(2027,8),mo(2027,9),mo(2027,11),mo(2027,11)].forEach(function(t,i){mark(t,0.52,C.sar,"d","AI Futures Project, "+who[i]+": median date for SAR, "+dateLabel(t))});
@@ -376,6 +377,8 @@ body{margin:0}
       [[0.35,"Eli, Lukas and Thomas"],[0.38,"Romeo"],[0.45,"Brendan"],[0.65,"Daniel"]].forEach(function(a){mark(2028,a[0],C.ted,"d","AI Futures Project, "+a[1]+": "+Math.round(a[0]*100)+"% chance of TED-AI by end of 2027")});
       mark(2027.2,0.10,C.asi,"t","Sentinel forecasters: 10% chance of ASI by early 2027");mark(2028.2,0.50,C.asi,"t","Sentinel forecasters: median date for ASI, early 2028");
       mark(2027.86,1/3,C.ted,"s","Paul Christiano, 9 November: one-third chance within a year of AI able to overthrow governments");
+      mark(2028.5,0.50,C.sar,"q","Dwarkesh Patel, 13 November: median year for SAR is 2028 (AI as good as the very best human AI researchers)");
+      mark(2030,0.50,C.ted,"q","Dwarkesh Patel, 13 November: expects TED-AI by 2030 (AI at least as good as the best human experts in every field). He gives no probability, so this is drawn at 50%");
     }
     hoverLayer(svg,"cProb",3,mt,c.H-mb);
     GEOM.cProb={X:X,x0:x0,x1:x1,ml:ml,mr:mr,W:c.W,n:3,rows:function(t){return MS.map(function(m){var v=M.prob(m[0],t);return {c:m[2],y:Y(v),key:KDOT(m[2]),s:m[1]+" "+Math.round(v*100)+"%"}})}};
